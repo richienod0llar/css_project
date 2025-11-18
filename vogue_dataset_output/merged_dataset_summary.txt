@@ -1,0 +1,91 @@
+VOGUE RUNWAY MERGED DATASET SUMMARY (30K)
+============================================================
+
+Total images: 30000
+Images with files: 30000
+Missing images: 0
+
+Year range: 1988 - 2023
+
+Source folders:
+  vogue_runway_030: 10000 images
+  vogue_runway_065: 10000 images
+  vogue_runway_124: 10000 images
+
+Images per year:
+  1988: 1
+  1989: 7
+  1990: 1
+  1991: 19
+  1992: 72
+  1993: 7
+  1994: 47
+  1995: 77
+  1996: 61
+  1997: 87
+  1998: 63
+  1999: 62
+  2000: 305
+  2001: 321
+  2002: 453
+  2003: 425
+  2004: 392
+  2005: 594
+  2006: 612
+  2007: 681
+  2008: 813
+  2009: 992
+  2010: 1265
+  2011: 1316
+  2012: 1615
+  2013: 1721
+  2014: 1756
+  2015: 2040
+  2016: 3347
+  2017: 2140
+  2018: 843
+  2019: 2109
+  2020: 1974
+  2021: 1097
+  2022: 1435
+  2023: 1250
+
+Top 20 designers by image count:
+  Chanel: 530
+  Valentino: 486
+  Christian Dior: 451
+  Dolce & Gabbana: 376
+  Versace: 356
+  Givenchy: 346
+  Giorgio Armani: 325
+  Gucci: 309
+  Louis Vuitton: 298
+  Prada: 293
+  Jean Paul Gaultier: 288
+  Dries Van Noten: 286
+  Fendi: 282
+  Balmain: 280
+  Lanvin: 272
+  Burberry: 271
+  Michael Kors Collection: 264
+  Giambattista Valli: 251
+  Saint Laurent: 238
+  Marni: 233
+
+Categories:
+  Ready-to-Wear: 19507
+  Menswear: 4692
+  Couture: 1435
+  Bridal: 74
+
+Seasons:
+  Spring: 13278
+  Fall: 13047
+  Resort: 2039
+  Pre-Fall: 1636
+
+Aesthetic score statistics:
+  Mean: 4.93
+  Median: 4.93
+  Min: 2.27
+  Max: 7.54
