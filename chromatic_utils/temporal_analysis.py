@@ -221,3 +221,5 @@ def get_dominant_palette_per_decade(df_results, df_sanzo):
     
     return pd.DataFrame(decade_palettes)
 
+
+

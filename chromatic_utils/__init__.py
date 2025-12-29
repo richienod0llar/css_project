@@ -18,7 +18,9 @@ from .color_extraction import (
 
 from .sanzo_wada import (
     load_sanzo_wada_palettes,
-    find_closest_wada_palette
+    find_closest_wada_palette,
+    translate_palette_name,
+    PALETTE_NAME_TRANSLATIONS
 )
 
 from .temporal_analysis import (
@@ -54,6 +56,8 @@ __all__ = [
     # Sanzo Wada
     'load_sanzo_wada_palettes',
     'find_closest_wada_palette',
+    'translate_palette_name',
+    'PALETTE_NAME_TRANSLATIONS',
     
     # Temporal analysis
     'aggregate_by_year',

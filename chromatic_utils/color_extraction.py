@@ -170,3 +170,5 @@ def calculate_color_statistics(lab_colors, proportions):
         'color_diversity': color_diversity
     }
 
+
+

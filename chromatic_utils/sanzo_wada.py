@@ -9,8 +9,61 @@ import numpy as np
 import requests
 from colormath.color_objects import sRGBColor, LabColor
 from colormath.color_conversions import convert_color
+
+# Monkey-patch numpy for colormath compatibility with numpy 2.0+
+if not hasattr(np, 'asscalar'):
+    np.asscalar = lambda x: x.item() if hasattr(x, 'item') else float(x)
+
 from colormath.color_diff import delta_e_cie2000
 from .color_extraction import lab_opencv_to_colormath
+
+
+# Japanese to English translation mapping for Sanzo Wada color names
+PALETTE_NAME_TRANSLATIONS = {
+    "紅梅鼠": "Plum Mouse Gray",
+    "海老茶": "Shrimp Brown",
+    "深川鼠": "Fukagawa Mouse Gray",
+    "桜鼠": "Cherry Mouse Gray",
+    "藍鼠": "Indigo Mouse Gray",
+    "柳鼠": "Willow Mouse Gray",
+    "鴬茶": "Nightingale Brown",
+    "海松茶": "Seaweed Brown",
+    "紺青": "Navy Blue",
+    "臙脂": "Crimson",
+    "鶯色": "Nightingale Green",
+    "鶸茶": "Siskin Brown",
+    "青磁色": "Celadon",
+    "小豆色": "Azuki Bean Red",
+    "水色": "Water Blue",
+    "芥子色": "Mustard",
+    "牡丹色": "Peony Pink",
+    "青緑": "Blue-Green",
+    "山吹色": "Yamabuki Yellow",
+    "桃色": "Peach",
+    "露草色": "Dayflower Blue",
+    "萌黄": "Spring Green",
+    "浅葱色": "Light Indigo",
+    "紅色": "Crimson Red",
+    "紫": "Purple",
+    "鼠色": "Mouse Gray",
+    "墨色": "Ink Black",
+    "白群": "Pale Blue-Green",
+    "若草色": "Young Grass Green",
+    "桜色": "Cherry Blossom Pink"
+}
+
+
+def translate_palette_name(japanese_name):
+    """
+    Translate Japanese palette name to English.
+    
+    Args:
+        japanese_name: Japanese color name
+    
+    Returns:
+        English translation if available, otherwise original name
+    """
+    return PALETTE_NAME_TRANSLATIONS.get(japanese_name, japanese_name)
 
 
 def load_sanzo_wada_palettes():
@@ -39,7 +92,9 @@ def load_sanzo_wada_palettes():
     
     for palette in palettes_data:
         palette_id = palette.get('id', palette.get('name', 'unknown'))
-        palette_name = palette.get('name', palette.get('id', 'Unknown'))
+        palette_name_original = palette.get('name', palette.get('id', 'Unknown'))
+        # Translate Japanese names to English
+        palette_name = translate_palette_name(palette_name_original)
         colors = palette.get('colors', [])
         
         for color_hex in colors:
@@ -77,39 +132,39 @@ def get_fallback_sanzo_wada():
     Representative subset of the 348 original palettes.
     
     Returns:
-        List of palette dictionaries
+        List of palette dictionaries with English translated names
     """
     return [
-        {"id": "001", "name": "紅梅鼠", "colors": ["#917877", "#E9DFE0", "#D3BCB3", "#B97B6D"]},
-        {"id": "002", "name": "海老茶", "colors": ["#772C25", "#AF4436", "#D7C4BB", "#E8D5C8"]},
-        {"id": "003", "name": "深川鼠", "colors": ["#5B7E91", "#93B5C6", "#BBC8D4", "#D4E2E8"]},
-        {"id": "004", "name": "桜鼠", "colors": ["#A88E87", "#E8D4CD", "#EAD7CE", "#F4E9E3"]},
-        {"id": "005", "name": "藍鼠", "colors": ["#5C6D7C", "#8B9FAF", "#B2C2CE", "#D5E0E8"]},
-        {"id": "006", "name": "柳鼠", "colors": ["#7F8A7F", "#A8B5A8", "#C5D0C5", "#DEE5DE"]},
-        {"id": "007", "name": "鴬茶", "colors": ["#6C5B3D", "#A08C68", "#C9B897", "#E5D9C1"]},
-        {"id": "008", "name": "海松茶", "colors": ["#5B6356", "#8C9486", "#B7C0B2", "#D8DED4"]},
-        {"id": "009", "name": "紺青", "colors": ["#003854", "#1E5A74", "#4A7C92", "#76A0B3"]},
-        {"id": "010", "name": "臙脂", "colors": ["#AB2D3A", "#C74654", "#DC8189", "#ECBCC0"]},
-        {"id": "011", "name": "鶯色", "colors": ["#6C6B2C", "#949438", "#B9B95A", "#D9D98C"]},
-        {"id": "012", "name": "鶸茶", "colors": ["#8F8526", "#B7AE45", "#CEC870", "#E3DC9A"]},
-        {"id": "013", "name": "青磁色", "colors": ["#78AFA3", "#9AC8BE", "#BDD9D1", "#DEE9E5"]},
-        {"id": "014", "name": "小豆色", "colors": ["#6F3430", "#954E47", "#B87C76", "#D9B3AE"]},
-        {"id": "015", "name": "水色", "colors": ["#7DB9DE", "#A0CFE8", "#BFE0F0", "#DEEFF7"]},
-        {"id": "016", "name": "芥子色", "colors": ["#C4972F", "#D9B44A", "#E5C76B", "#EFE0A2"]},
-        {"id": "017", "name": "牡丹色", "colors": ["#E03C8A", "#ED6EA7", "#F49EC0", "#FAD0DC"]},
-        {"id": "018", "name": "青緑", "colors": ["#00A497", "#00BFB0", "#5CD1C7", "#A3E5DE"]},
-        {"id": "019", "name": "山吹色", "colors": ["#F5B800", "#F8C500", "#FAD64B", "#FCE78C"]},
-        {"id": "020", "name": "桃色", "colors": ["#F19CA7", "#F5B5BD", "#F9CFD4", "#FCE8EA"]},
-        {"id": "021", "name": "露草色", "colors": ["#2F5DA6", "#5580BE", "#7FA3D1", "#B3CCE5"]},
-        {"id": "022", "name": "萌黄", "colors": ["#8FC31F", "#A7D143", "#BFDD6E", "#D9EBA3"]},
-        {"id": "023", "name": "浅葱色", "colors": ["#00A3AF", "#00BCC9", "#4DD2DC", "#99E5EC"]},
-        {"id": "024", "name": "紅色", "colors": ["#D71345", "#E64166", "#F07B95", "#F9BEC7"]},
-        {"id": "025", "name": "紫", "colors": ["#884898", "#A367B1", "#BE8DCA", "#DCBFE7"]},
-        {"id": "026", "name": "鼠色", "colors": ["#787878", "#9B9B9B", "#BEBEBE", "#E0E0E0"]},
-        {"id": "027", "name": "墨色", "colors": ["#3A3A3A", "#5E5E5E", "#828282", "#A6A6A6"]},
-        {"id": "028", "name": "白群", "colors": ["#83CCD2", "#A3DAE0", "#C3E8ED", "#E3F6F8"]},
-        {"id": "029", "name": "若草色", "colors": ["#C3D825", "#D3E445", "#E3F06B", "#F3FC9B"]},
-        {"id": "030", "name": "桜色", "colors": ["#FEEEED", "#FDD5D3", "#FCBCB9", "#FBA3A0"]},
+        {"id": "001", "name": "Plum Mouse Gray", "colors": ["#917877", "#E9DFE0", "#D3BCB3", "#B97B6D"]},
+        {"id": "002", "name": "Shrimp Brown", "colors": ["#772C25", "#AF4436", "#D7C4BB", "#E8D5C8"]},
+        {"id": "003", "name": "Fukagawa Mouse Gray", "colors": ["#5B7E91", "#93B5C6", "#BBC8D4", "#D4E2E8"]},
+        {"id": "004", "name": "Cherry Mouse Gray", "colors": ["#A88E87", "#E8D4CD", "#EAD7CE", "#F4E9E3"]},
+        {"id": "005", "name": "Indigo Mouse Gray", "colors": ["#5C6D7C", "#8B9FAF", "#B2C2CE", "#D5E0E8"]},
+        {"id": "006", "name": "Willow Mouse Gray", "colors": ["#7F8A7F", "#A8B5A8", "#C5D0C5", "#DEE5DE"]},
+        {"id": "007", "name": "Nightingale Brown", "colors": ["#6C5B3D", "#A08C68", "#C9B897", "#E5D9C1"]},
+        {"id": "008", "name": "Seaweed Brown", "colors": ["#5B6356", "#8C9486", "#B7C0B2", "#D8DED4"]},
+        {"id": "009", "name": "Navy Blue", "colors": ["#003854", "#1E5A74", "#4A7C92", "#76A0B3"]},
+        {"id": "010", "name": "Crimson", "colors": ["#AB2D3A", "#C74654", "#DC8189", "#ECBCC0"]},
+        {"id": "011", "name": "Nightingale Green", "colors": ["#6C6B2C", "#949438", "#B9B95A", "#D9D98C"]},
+        {"id": "012", "name": "Siskin Brown", "colors": ["#8F8526", "#B7AE45", "#CEC870", "#E3DC9A"]},
+        {"id": "013", "name": "Celadon", "colors": ["#78AFA3", "#9AC8BE", "#BDD9D1", "#DEE9E5"]},
+        {"id": "014", "name": "Azuki Bean Red", "colors": ["#6F3430", "#954E47", "#B87C76", "#D9B3AE"]},
+        {"id": "015", "name": "Water Blue", "colors": ["#7DB9DE", "#A0CFE8", "#BFE0F0", "#DEEFF7"]},
+        {"id": "016", "name": "Mustard", "colors": ["#C4972F", "#D9B44A", "#E5C76B", "#EFE0A2"]},
+        {"id": "017", "name": "Peony Pink", "colors": ["#E03C8A", "#ED6EA7", "#F49EC0", "#FAD0DC"]},
+        {"id": "018", "name": "Blue-Green", "colors": ["#00A497", "#00BFB0", "#5CD1C7", "#A3E5DE"]},
+        {"id": "019", "name": "Yamabuki Yellow", "colors": ["#F5B800", "#F8C500", "#FAD64B", "#FCE78C"]},
+        {"id": "020", "name": "Peach", "colors": ["#F19CA7", "#F5B5BD", "#F9CFD4", "#FCE8EA"]},
+        {"id": "021", "name": "Dayflower Blue", "colors": ["#2F5DA6", "#5580BE", "#7FA3D1", "#B3CCE5"]},
+        {"id": "022", "name": "Spring Green", "colors": ["#8FC31F", "#A7D143", "#BFDD6E", "#D9EBA3"]},
+        {"id": "023", "name": "Light Indigo", "colors": ["#00A3AF", "#00BCC9", "#4DD2DC", "#99E5EC"]},
+        {"id": "024", "name": "Crimson Red", "colors": ["#D71345", "#E64166", "#F07B95", "#F9BEC7"]},
+        {"id": "025", "name": "Purple", "colors": ["#884898", "#A367B1", "#BE8DCA", "#DCBFE7"]},
+        {"id": "026", "name": "Mouse Gray", "colors": ["#787878", "#9B9B9B", "#BEBEBE", "#E0E0E0"]},
+        {"id": "027", "name": "Ink Black", "colors": ["#3A3A3A", "#5E5E5E", "#828282", "#A6A6A6"]},
+        {"id": "028", "name": "Pale Blue-Green", "colors": ["#83CCD2", "#A3DAE0", "#C3E8ED", "#E3F6F8"]},
+        {"id": "029", "name": "Young Grass Green", "colors": ["#C3D825", "#D3E445", "#E3F06B", "#F3FC9B"]},
+        {"id": "030", "name": "Cherry Blossom Pink", "colors": ["#FEEEED", "#FDD5D3", "#FCBCB9", "#FBA3A0"]},
     ]
 
 

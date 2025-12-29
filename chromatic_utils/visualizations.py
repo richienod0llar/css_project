@@ -377,3 +377,5 @@ def create_summary_visualization(yearly_stats, output_path=None):
     
     return fig
 
+
+
