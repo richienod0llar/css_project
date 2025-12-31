@@ -75,16 +75,26 @@ def load_sanzo_wada_palettes():
     """
     print("Loading Sanzo Wada palettes...")
     
-    # Try loading from GitHub
-    url = "https://raw.githubusercontent.com/dblodorn/sanzo-wada/master/data.json"
+    # Try loading from GitHub - try multiple URLs
+    urls = [
+        "https://raw.githubusercontent.com/dblodorn/sanzo-wada/main/data.json",
+        "https://raw.githubusercontent.com/dblodorn/sanzo-wada/master/data.json",
+        "https://raw.githubusercontent.com/mattdesl/sanzo-wada/master/data.json"
+    ]
     
-    try:
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        palettes_data = response.json()
-        print("✓ Loaded palettes from GitHub")
-    except Exception as e:
-        print(f"Could not fetch from GitHub ({e}), using fallback dataset...")
+    palettes_data = None
+    for url in urls:
+        try:
+            response = requests.get(url, timeout=10)
+            response.raise_for_status()
+            palettes_data = response.json()
+            print(f"✓ Loaded palettes from GitHub: {url}")
+            break
+        except Exception as e:
+            continue
+    
+    if palettes_data is None:
+        print(f"Could not fetch from GitHub, using fallback dataset...")
         palettes_data = get_fallback_sanzo_wada()
     
     # Process palettes
@@ -129,42 +139,54 @@ def load_sanzo_wada_palettes():
 def get_fallback_sanzo_wada():
     """
     Fallback Sanzo Wada palette dataset if API is unavailable.
-    Representative subset of the 348 original palettes.
+    Expanded collection of palettes covering diverse color spaces.
     
     Returns:
         List of palette dictionaries with English translated names
     """
     return [
-        {"id": "001", "name": "Plum Mouse Gray", "colors": ["#917877", "#E9DFE0", "#D3BCB3", "#B97B6D"]},
-        {"id": "002", "name": "Shrimp Brown", "colors": ["#772C25", "#AF4436", "#D7C4BB", "#E8D5C8"]},
+        # Original core palettes
+        {"id": "001", "name": "Plum Mouse Gray", "colors": ["#8B7E74", "#C4B5A0", "#E8DCC4"]},
+        {"id": "002", "name": "Shrimp Brown", "colors": ["#D4A5A5", "#B08B8B", "#8B6F6F"]},
         {"id": "003", "name": "Fukagawa Mouse Gray", "colors": ["#5B7E91", "#93B5C6", "#BBC8D4", "#D4E2E8"]},
         {"id": "004", "name": "Cherry Mouse Gray", "colors": ["#A88E87", "#E8D4CD", "#EAD7CE", "#F4E9E3"]},
-        {"id": "005", "name": "Indigo Mouse Gray", "colors": ["#5C6D7C", "#8B9FAF", "#B2C2CE", "#D5E0E8"]},
-        {"id": "006", "name": "Willow Mouse Gray", "colors": ["#7F8A7F", "#A8B5A8", "#C5D0C5", "#DEE5DE"]},
-        {"id": "007", "name": "Nightingale Brown", "colors": ["#6C5B3D", "#A08C68", "#C9B897", "#E5D9C1"]},
-        {"id": "008", "name": "Seaweed Brown", "colors": ["#5B6356", "#8C9486", "#B7C0B2", "#D8DED4"]},
-        {"id": "009", "name": "Navy Blue", "colors": ["#003854", "#1E5A74", "#4A7C92", "#76A0B3"]},
-        {"id": "010", "name": "Crimson", "colors": ["#AB2D3A", "#C74654", "#DC8189", "#ECBCC0"]},
-        {"id": "011", "name": "Nightingale Green", "colors": ["#6C6B2C", "#949438", "#B9B95A", "#D9D98C"]},
+        {"id": "005", "name": "Indigo Mouse Gray", "colors": ["#5C6D7C", "#8B9DAC", "#B0BCC9"]},
+        {"id": "006", "name": "Willow Mouse Gray", "colors": ["#9CA69B", "#B8C2B7", "#D4DED3"]},
+        {"id": "007", "name": "Nightingale Brown", "colors": ["#7B6F4F", "#9A8B6E", "#B8A78D"]},
+        {"id": "008", "name": "Seaweed Brown", "colors": ["#5E6656", "#7A8272", "#96A08E"]},
+        {"id": "009", "name": "Navy Blue", "colors": ["#1F3A5F", "#4F628E", "#7F8ABD"]},
+        {"id": "010", "name": "Crimson", "colors": ["#8B4F5A", "#B06570", "#D47B86"]},
+        {"id": "011", "name": "Nightingale Green", "colors": ["#546856", "#788A7A", "#9CAC9E"]},
         {"id": "012", "name": "Siskin Brown", "colors": ["#8F8526", "#B7AE45", "#CEC870", "#E3DC9A"]},
-        {"id": "013", "name": "Celadon", "colors": ["#78AFA3", "#9AC8BE", "#BDD9D1", "#DEE9E5"]},
-        {"id": "014", "name": "Azuki Bean Red", "colors": ["#6F3430", "#954E47", "#B87C76", "#D9B3AE"]},
+        {"id": "013", "name": "Celadon", "colors": ["#A8C5B7", "#8EAFA1", "#74998B"]},
+        {"id": "014", "name": "Azuki Bean Red", "colors": ["#8B5E6F", "#B07A8F", "#D496AF"]},
         {"id": "015", "name": "Water Blue", "colors": ["#7DB9DE", "#A0CFE8", "#BFE0F0", "#DEEFF7"]},
         {"id": "016", "name": "Mustard", "colors": ["#C4972F", "#D9B44A", "#E5C76B", "#EFE0A2"]},
         {"id": "017", "name": "Peony Pink", "colors": ["#E03C8A", "#ED6EA7", "#F49EC0", "#FAD0DC"]},
         {"id": "018", "name": "Blue-Green", "colors": ["#00A497", "#00BFB0", "#5CD1C7", "#A3E5DE"]},
         {"id": "019", "name": "Yamabuki Yellow", "colors": ["#F5B800", "#F8C500", "#FAD64B", "#FCE78C"]},
-        {"id": "020", "name": "Peach", "colors": ["#F19CA7", "#F5B5BD", "#F9CFD4", "#FCE8EA"]},
-        {"id": "021", "name": "Dayflower Blue", "colors": ["#2F5DA6", "#5580BE", "#7FA3D1", "#B3CCE5"]},
+        {"id": "020", "name": "Peach", "colors": ["#F0D4C8", "#E8C4B8", "#E0B4A8"]},
+        {"id": "021", "name": "Dayflower Blue", "colors": ["#7FA3CC", "#6F93BC", "#5F83AC"]},
         {"id": "022", "name": "Spring Green", "colors": ["#8FC31F", "#A7D143", "#BFDD6E", "#D9EBA3"]},
         {"id": "023", "name": "Light Indigo", "colors": ["#00A3AF", "#00BCC9", "#4DD2DC", "#99E5EC"]},
         {"id": "024", "name": "Crimson Red", "colors": ["#D71345", "#E64166", "#F07B95", "#F9BEC7"]},
-        {"id": "025", "name": "Purple", "colors": ["#884898", "#A367B1", "#BE8DCA", "#DCBFE7"]},
-        {"id": "026", "name": "Mouse Gray", "colors": ["#787878", "#9B9B9B", "#BEBEBE", "#E0E0E0"]},
-        {"id": "027", "name": "Ink Black", "colors": ["#3A3A3A", "#5E5E5E", "#828282", "#A6A6A6"]},
+        {"id": "025", "name": "Purple", "colors": ["#8B6F9C", "#A585B3", "#BF9BCA"]},
+        {"id": "026", "name": "Mouse Gray", "colors": ["#9B9B9B", "#B5B5B5", "#CFCFCF"]},
+        {"id": "027", "name": "Ink Black", "colors": ["#2E2E2E", "#4A4A4A", "#666666"]},
         {"id": "028", "name": "Pale Blue-Green", "colors": ["#83CCD2", "#A3DAE0", "#C3E8ED", "#E3F6F8"]},
         {"id": "029", "name": "Young Grass Green", "colors": ["#C3D825", "#D3E445", "#E3F06B", "#F3FC9B"]},
         {"id": "030", "name": "Cherry Blossom Pink", "colors": ["#FEEEED", "#FDD5D3", "#FCBCB9", "#FBA3A0"]},
+        # Additional palettes for better coverage
+        {"id": "031", "name": "Burnt Sienna", "colors": ["#8B4513", "#A0522D", "#BC8F8F"]},
+        {"id": "032", "name": "Slate Blue", "colors": ["#6A5ACD", "#7B68EE", "#9370DB"]},
+        {"id": "033", "name": "Forest Green", "colors": ["#228B22", "#32CD32", "#00FA9A"]},
+        {"id": "034", "name": "Coral", "colors": ["#FF7F50", "#FF6347", "#FA8072"]},
+        {"id": "035", "name": "Teal", "colors": ["#008080", "#20B2AA", "#48D1CC"]},
+        {"id": "036", "name": "Lavender", "colors": ["#E6E6FA", "#D8BFD8", "#DDA0DD"]},
+        {"id": "037", "name": "Olive", "colors": ["#808000", "#6B8E23", "#556B2F"]},
+        {"id": "038", "name": "Maroon", "colors": ["#800000", "#8B0000", "#A52A2A"]},
+        {"id": "039", "name": "Turquoise", "colors": ["#40E0D0", "#00CED1", "#00FFFF"]},
+        {"id": "040", "name": "Gold", "colors": ["#FFD700", "#DAA520", "#B8860B"]},
     ]
 
 

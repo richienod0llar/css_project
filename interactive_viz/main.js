@@ -54,34 +54,54 @@ let designerData = [];
 
 async function loadData() {
     try {
+        console.log('🔄 Starting data load...');
+        
         // Load yearly statistics
+        console.log('Loading yearly statistics...');
         const yearlyResponse = await fetch('chromatic_analysis_output/yearly_statistics.csv');
+        if (!yearlyResponse.ok) throw new Error(`HTTP error! status: ${yearlyResponse.status}`);
         const yearlyText = await yearlyResponse.text();
+        console.log('Yearly text length:', yearlyText.length);
         yearlyData = parseCSV(yearlyText);
+        console.log('Parsed yearly data:', yearlyData.length, 'rows');
         
         // Load palette by year
+        console.log('Loading palette data...');
         const paletteResponse = await fetch('chromatic_analysis_output/palette_by_year.csv');
+        if (!paletteResponse.ok) throw new Error(`HTTP error! status: ${paletteResponse.status}`);
         const paletteText = await paletteResponse.text();
         paletteData = parseCSV(paletteText);
+        console.log('Parsed palette data:', paletteData.length, 'rows');
         
         // Load decade statistics
+        console.log('Loading decade data...');
         const decadeResponse = await fetch('chromatic_analysis_output/decade_statistics.csv');
+        if (!decadeResponse.ok) throw new Error(`HTTP error! status: ${decadeResponse.status}`);
         const decadeText = await decadeResponse.text();
         decadeData = parseCSV(decadeText);
+        console.log('Parsed decade data:', decadeData.length, 'rows');
         
         // Load designer analysis
+        console.log('Loading designer data...');
         const designerResponse = await fetch('chromatic_analysis_output/designer_analysis.csv');
+        if (!designerResponse.ok) throw new Error(`HTTP error! status: ${designerResponse.status}`);
         const designerText = await designerResponse.text();
         designerData = parseCSV(designerText);
+        console.log('Parsed designer data:', designerData.length, 'rows');
         
         console.log('✅ Data loaded successfully!');
         console.log('📊 Yearly data points:', yearlyData.length);
         console.log('🎨 Palette data points:', paletteData.length);
         console.log('👔 Designer data points:', designerData.length);
+        
+        console.log('Initializing visualizations...');
         initializeVisualizations();
+        console.log('✅ Visualizations initialized!');
     } catch (error) {
         console.error('❌ Error loading data:', error);
-        alert('Failed to load data. Make sure the CSV files are in the chromatic_analysis_output folder.');
+        console.error('Error details:', error.message);
+        console.error('Error stack:', error.stack);
+        alert('Failed to load data. Check console for details. Error: ' + error.message);
     }
 }
 
@@ -109,6 +129,7 @@ function initializeVisualizations() {
     createDecadeVisualization();
     createPaletteExplorer();
     createDesignerChart();
+    createCycleVisualization();
     createFinalVisualization();
     animateStatsOnScroll();
 }
@@ -335,7 +356,7 @@ function createPaletteExplorer() {
     // Get top palettes
     const paletteCounts = {};
     paletteData.forEach(d => {
-        const id = d.palette_id.padStart(3, '0');
+        const id = String(d.palette_id).padStart(3, '0');
         paletteCounts[id] = (paletteCounts[id] || 0) + d.count;
     });
     
@@ -487,6 +508,207 @@ function createDesignerChart() {
     
     chartDiv.appendChild(lightestSection);
     chartDiv.appendChild(darkestSection);
+}
+
+// ============================================
+// FASHION CYCLE VISUALIZATION
+// ============================================
+
+function createCycleVisualization() {
+    createCycleComparison();
+    createDecadeMirrorChart();
+}
+
+function createCycleComparison() {
+    const container = document.getElementById('cycle-comparison');
+    if (!container || paletteData.length === 0) return;
+    
+    // Analyze palette recurrence across decades
+    const palettesByDecade = {};
+    
+    paletteData.forEach(d => {
+        const decade = Math.floor(d.year / 10) * 10;
+        const id = String(d.palette_id).padStart(3, '0');
+        
+        if (!palettesByDecade[decade]) {
+            palettesByDecade[decade] = {};
+        }
+        
+        palettesByDecade[decade][id] = (palettesByDecade[decade][id] || 0) + d.count;
+    });
+    
+    // Find top palettes from 1990s
+    const nineties = palettesByDecade[1990] || {};
+    const topNineties = Object.entries(nineties)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 6)
+        .map(([id]) => id);
+    
+    // Check which ones reappeared in 2010s and 2020s
+    const twentyTens = palettesByDecade[2010] || {};
+    const twentyTwenties = palettesByDecade[2020] || {};
+    
+    // Create visual comparison
+    topNineties.forEach(paletteId => {
+        const cycleCard = document.createElement('div');
+        cycleCard.className = 'cycle-card';
+        
+        // Palette info
+        const paletteHeader = document.createElement('div');
+        paletteHeader.className = 'cycle-palette-header';
+        
+        const paletteName = document.createElement('div');
+        paletteName.className = 'cycle-palette-name';
+        paletteName.textContent = PALETTE_NAMES[paletteId] || `Palette ${paletteId}`;
+        
+        const paletteColors = document.createElement('div');
+        paletteColors.className = 'cycle-palette-colors';
+        const colors = PALETTE_COLORS[paletteId] || ['#cccccc', '#999999', '#666666'];
+        colors.forEach(color => {
+            const colorBlock = document.createElement('div');
+            colorBlock.className = 'cycle-color-block';
+            colorBlock.style.backgroundColor = color;
+            paletteColors.appendChild(colorBlock);
+        });
+        
+        paletteHeader.appendChild(paletteName);
+        paletteHeader.appendChild(paletteColors);
+        
+        // Timeline showing appearances
+        const timeline = document.createElement('div');
+        timeline.className = 'cycle-timeline';
+        
+        const nineties90s = nineties[paletteId] || 0;
+        const count2010s = twentyTens[paletteId] || 0;
+        const count2020s = twentyTwenties[paletteId] || 0;
+        
+        const maxCount = Math.max(nineties90s, count2010s, count2020s);
+        
+        // 1990s bar
+        const bar90s = document.createElement('div');
+        bar90s.className = 'cycle-decade-bar';
+        bar90s.innerHTML = `
+            <span class="decade-label">1990s</span>
+            <div class="bar-fill" style="width: ${(nineties90s / maxCount * 100)}%"></div>
+            <span class="count-label">${nineties90s}</span>
+        `;
+        
+        // 2010s bar
+        const bar2010s = document.createElement('div');
+        bar2010s.className = 'cycle-decade-bar';
+        const returned2010s = count2010s > 0;
+        bar2010s.innerHTML = `
+            <span class="decade-label">2010s</span>
+            <div class="bar-fill ${returned2010s ? 'returned' : ''}" style="width: ${(count2010s / maxCount * 100)}%"></div>
+            <span class="count-label">${count2010s}</span>
+        `;
+        
+        // 2020s bar
+        const bar2020s = document.createElement('div');
+        bar2020s.className = 'cycle-decade-bar';
+        const returned2020s = count2020s > 0;
+        bar2020s.innerHTML = `
+            <span class="decade-label">2020s</span>
+            <div class="bar-fill ${returned2020s ? 'returned' : ''}" style="width: ${(count2020s / maxCount * 100)}%"></div>
+            <span class="count-label">${count2020s}</span>
+        `;
+        
+        timeline.appendChild(bar90s);
+        timeline.appendChild(bar2010s);
+        timeline.appendChild(bar2020s);
+        
+        // Add status indicator
+        const status = document.createElement('div');
+        status.className = 'cycle-status';
+        if (count2010s > 0 || count2020s > 0) {
+            status.innerHTML = '↻ <strong>Returned</strong>';
+            status.classList.add('returned');
+        } else {
+            status.innerHTML = '• <strong>Dormant</strong>';
+            status.classList.add('dormant');
+        }
+        
+        cycleCard.appendChild(paletteHeader);
+        cycleCard.appendChild(timeline);
+        cycleCard.appendChild(status);
+        
+        container.appendChild(cycleCard);
+    });
+}
+
+function createDecadeMirrorChart() {
+    const container = document.getElementById('mirror-chart');
+    if (!container || paletteData.length === 0) return;
+    
+    // Calculate palette overlap between decades
+    const decades = [1990, 2000, 2010, 2020];
+    const palettesByDecade = {};
+    
+    paletteData.forEach(d => {
+        const decade = Math.floor(d.year / 10) * 10;
+        const id = String(d.palette_id).padStart(3, '0');
+        
+        if (!palettesByDecade[decade]) {
+            palettesByDecade[decade] = new Set();
+        }
+        
+        palettesByDecade[decade].add(id);
+    });
+    
+    // Create comparison matrix
+    const comparisonData = [
+        { source: '1990s', target: '2010s', overlap: 0 },
+        { source: '1990s', target: '2020s', overlap: 0 },
+        { source: '2000s', target: '2020s', overlap: 0 }
+    ];
+    
+    // Calculate overlaps
+    const palettes1990s = palettesByDecade[1990] || new Set();
+    const palettes2000s = palettesByDecade[2000] || new Set();
+    const palettes2010s = palettesByDecade[2010] || new Set();
+    const palettes2020s = palettesByDecade[2020] || new Set();
+    
+    // 1990s -> 2010s
+    comparisonData[0].overlap = [...palettes1990s].filter(p => palettes2010s.has(p)).length;
+    comparisonData[0].total = palettes1990s.size;
+    
+    // 1990s -> 2020s
+    comparisonData[1].overlap = [...palettes1990s].filter(p => palettes2020s.has(p)).length;
+    comparisonData[1].total = palettes1990s.size;
+    
+    // 2000s -> 2020s
+    comparisonData[2].overlap = [...palettes2000s].filter(p => palettes2020s.has(p)).length;
+    comparisonData[2].total = palettes2000s.size;
+    
+    // Render bars
+    comparisonData.forEach(d => {
+        const row = document.createElement('div');
+        row.className = 'mirror-row';
+        
+        const label = document.createElement('div');
+        label.className = 'mirror-label';
+        label.textContent = `${d.source} → ${d.target}`;
+        
+        const barContainer = document.createElement('div');
+        barContainer.className = 'mirror-bar-container';
+        
+        const bar = document.createElement('div');
+        bar.className = 'mirror-bar';
+        const percentage = (d.overlap / d.total * 100).toFixed(0);
+        bar.style.width = percentage + '%';
+        
+        const value = document.createElement('div');
+        value.className = 'mirror-value';
+        value.textContent = `${d.overlap} palettes (${percentage}%)`;
+        
+        barContainer.appendChild(bar);
+        barContainer.appendChild(value);
+        
+        row.appendChild(label);
+        row.appendChild(barContainer);
+        
+        container.appendChild(row);
+    });
 }
 
 // ============================================

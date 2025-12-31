@@ -376,7 +376,7 @@ function createPaletteExplorer(): void {
     
     const paletteCounts: { [key: string]: number } = {};
     paletteData.forEach(d => {
-        const id = d.palette_id.padStart(3, '0');
+        const id = String(d.palette_id).padStart(3, '0');
         paletteCounts[id] = (paletteCounts[id] || 0) + d.count;
     });
     

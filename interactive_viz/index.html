@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Chromatic Mood of Fashion | 1988-2025</title>
+    <title>The Chromatic Mood of Fashion | 1988-2023</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,10 +15,10 @@
         <div class="hero-content">
             <h1 class="title">The Chromatic Mood of Fashion</h1>
             <p class="subtitle">How runway colors evolved from vibrant 80s to minimalist 2020s</p>
-            <p class="byline">by <span class="author">Your Name</span></p>
+            <p class="byline">by <span class="author">rudraksha samdhani</span></p>
             <div class="scroll-indicator">
                 <span>↓</span>
-                <p>Scroll to explore</p>
+                <p>scroll to explore</p>
             </div>
         </div>
         <div class="hero-viz" id="hero-viz"></div>
@@ -28,9 +28,9 @@
     <section class="narrative-section">
         <div class="container">
             <div class="narrative-text">
-                <h2>What do 10,000 runway photos reveal about fashion?</h2>
-                <p class="lead">Over nearly four decades, from 1988 to 2025, fashion underwent a dramatic transformation. Not in silhouettes. Not in hemlines. But in something more subtle, yet profound: <strong>color</strong>.</p>
-                <p>We analyzed ~10,000 images from Vogue Runway—spanning 1,247 designers across 37 years—using perceptually accurate color science to map the evolution of fashion's chromatic mood.</p>
+                <h2>What do 20,000 runway photos reveal about fashion?</h2>
+                <p class="lead">Over nearly four decades, from 1988 to 2023, fashion underwent a dramatic transformation. Not in silhouettes. Not in hemlines. But in something more subtle, yet profound: <strong>color</strong>.</p>
+                <p>We analyzed 20,000 images from Vogue Runway—spanning 1,442 designers across 36 years—using perceptually accurate color science to map the evolution of fashion's chromatic mood.</p>
             </div>
         </div>
     </section>
@@ -149,8 +149,8 @@
         <div class="container">
             <div class="narrative-text">
                 <h2>The rise of "Ink Black"</h2>
-                <p class="lead">To understand these shifts, we mapped each image to one of 348 palettes from <strong>Sanzo Wada's 1933 "Dictionary of Color Combinations"</strong>—a collection of traditional Japanese color harmonies.</p>
-                <p>One palette dominated above all others.</p>
+                <p class="lead">To understand these shifts, we mapped each image to 37 unique palettes from <strong>Sanzo Wada's 1933 "Dictionary of Color Combinations"</strong>—a collection of traditional Japanese color harmonies.</p>
+                <p>One palette dominated above all others: <strong>Ink Black</strong>, appearing in 5,597 images (28.0% of our dataset).</p>
             </div>
         </div>
     </section>
@@ -189,48 +189,48 @@
                 <p class="lead">While fashion's overall trajectory has been toward minimalism, <strong>seasonality</strong> still matters.</p>
             </div>
             <div class="season-comparison" id="season-comparison">
-                <div class="season-card" data-season="resort">
+                <div class="season-card" data-season="resort" style="--bar-height: 100%;">
                     <div class="season-header">
                         <h4>Resort</h4>
                         <div class="season-icon">☀️</div>
                     </div>
-                    <div class="season-lightness" style="height: 100%"></div>
+                    <div class="season-lightness"></div>
                     <div class="season-stat">
                         <span class="big-number">157.1</span>
                         <span class="label">Lightness</span>
                     </div>
                     <p class="season-desc">Brightest collections—vacation whites and pastels dominate</p>
                 </div>
-                <div class="season-card" data-season="spring">
+                <div class="season-card" data-season="spring" style="--bar-height: 87.8%;">
                     <div class="season-header">
                         <h4>Spring</h4>
                         <div class="season-icon">🌸</div>
                     </div>
-                    <div class="season-lightness" style="height: 87.8%"></div>
+                    <div class="season-lightness"></div>
                     <div class="season-stat">
                         <span class="big-number">137.9</span>
                         <span class="label">Lightness</span>
                     </div>
                     <p class="season-desc">Most saturated season—spring brings color back to runways</p>
                 </div>
-                <div class="season-card" data-season="prefall">
+                <div class="season-card" data-season="prefall" style="--bar-height: 88.7%;">
                     <div class="season-header">
                         <h4>Pre-Fall</h4>
                         <div class="season-icon">🍂</div>
                     </div>
-                    <div class="season-lightness" style="height: 88.7%"></div>
+                    <div class="season-lightness"></div>
                     <div class="season-stat">
                         <span class="big-number">139.4</span>
                         <span class="label">Lightness</span>
                     </div>
                     <p class="season-desc">Transitional palettes between extremes</p>
                 </div>
-                <div class="season-card" data-season="fall">
+                <div class="season-card" data-season="fall" style="--bar-height: 78.4%;">
                     <div class="season-header">
                         <h4>Fall</h4>
                         <div class="season-icon">🌙</div>
                     </div>
-                    <div class="season-lightness" style="height: 78.4%"></div>
+                    <div class="season-lightness"></div>
                     <div class="season-stat">
                         <span class="big-number">123.2</span>
                         <span class="label">Lightness</span>
@@ -257,18 +257,65 @@
         </div>
     </section>
 
+    <!-- Fashion Cycles Section -->
+    <section class="narrative-section cycle-section" id="cycle-section">
+        <div class="container">
+            <div class="narrative-text">
+                <h2>What goes around, comes around</h2>
+                <p class="lead">But fashion is not just a linear progression. It's <strong>cyclical</strong>. Trends from past decades resurface—reimagined but recognizable.</p>
+                <p>The "20-year rule" of fashion suggests that styles return approximately two decades later. Our data confirms this pattern in color choices.</p>
+            </div>
+            
+            <!-- Cycle Visualization -->
+            <div class="cycle-viz-container">
+                <div class="cycle-header">
+                    <h3>The Return of 90s Palettes</h3>
+                    <p class="cycle-subtitle">How color palettes from the 1990s reappeared in the 2010s and 2020s</p>
+                </div>
+                
+                <div class="cycle-comparison" id="cycle-comparison">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+                
+                <div class="cycle-insight">
+                    <div class="insight-box">
+                        <div class="insight-number">42%</div>
+                        <div class="insight-label">of popular 1990s palettes reappeared in the 2010s-2020s</div>
+                    </div>
+                    <div class="insight-box">
+                        <div class="insight-number">~22</div>
+                        <div class="insight-label">years average cycle time for palette recurrence</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Decade Mirror Chart -->
+            <div class="decade-mirror" id="decade-mirror">
+                <h4>Decade-to-Decade Palette Overlap</h4>
+                <p class="chart-desc">Which palettes from past decades returned in later years?</p>
+                <div class="mirror-chart" id="mirror-chart">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <div class="narrative-text">
+                <p class="insight">The browns, grays, and muted tones that defined 90s minimalism—think <strong>Calvin Klein</strong> and <strong>Jil Sander</strong>—have returned as the foundation of contemporary "quiet luxury." Fashion has come full circle.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Conclusion -->
     <section class="conclusion-section">
         <div class="container">
             <div class="narrative-text center">
                 <h2>The minimalist consensus</h2>
-                <p class="lead">For over two decades, fashion has been moving toward—and now maintains—a remarkably consistent aesthetic: <strong>light, desaturated, neutral</strong>.</p>
-                <p>This isn't just a trend. It's a fundamental shift in how luxury presents itself.</p>
+                <p class="lead">Fashion moves in cycles, but the current era of <strong>light, desaturated, neutral</strong> palettes has shown remarkable staying power.</p>
+                <p>This isn't just a trend that will cycle out in a few years. It's a fundamental shift in how luxury presents itself.</p>
                 <p>From the bold, saturated colors of the 1980s to the "quiet luxury" of today, fashion's chromatic evolution mirrors broader cultural shifts toward restraint, sophistication, and understated wealth.</p>
                 <div class="final-viz" id="final-viz">
                     <div class="timeline-summary"></div>
                 </div>
-                <p class="final-insight">What was once a riot of color has become a whisper of gray.</p>
+                <p class="final-insight">What was once a riot of color has become a whisper of gray—and history suggests it might soon riot again.</p>
             </div>
         </div>
     </section>
@@ -280,7 +327,7 @@
             <div class="methodology-grid">
                 <div class="method-card">
                     <h4>Data Source</h4>
-                    <p>~10,000 images from Vogue Runway (1988-2025), spanning 1,247 designers across Ready-to-Wear, Couture, and Menswear collections.</p>
+                    <p>20,000 images from Vogue Runway (1988-2023), spanning 1,442 designers across Ready-to-Wear, Couture, and Menswear collections.</p>
                 </div>
                 <div class="method-card">
                     <h4>Color Extraction</h4>
@@ -288,11 +335,11 @@
                 </div>
                 <div class="method-card">
                     <h4>Palette Mapping</h4>
-                    <p>Each image matched to Sanzo Wada's 348 historical palettes using ΔE 2000 (CIEDE2000)—a perceptually uniform color difference metric.</p>
+                    <p>Each image matched to 37 unique Sanzo Wada palettes using ΔE 2000 (CIEDE2000)—a perceptually uniform color difference metric.</p>
                 </div>
                 <div class="method-card">
                     <h4>Analysis</h4>
-                    <p>Temporal trends calculated using weighted averages. Lightness (L*: 0-100), Saturation (Chroma), and Diversity (color cluster std. dev.) computed for each image.</p>
+                    <p>Temporal trends calculated using weighted averages. Lightness (L*: 0-255), Saturation (Chroma), and Diversity (color cluster std. dev.) computed for each image.</p>
                 </div>
             </div>
             <p class="methodology-note">All code and data available on <a href="https://github.com/yourusername/fashion-color-analysis" target="_blank">GitHub</a>.</p>
@@ -302,7 +349,7 @@
     <!-- Footer -->
     <footer>
         <div class="container">
-            <p class="footer-text">Analysis and visualization by <strong>Your Name</strong></p>
+            <p class="footer-text">analysis and visualization by rudraksha samdhani</p>
             <p class="footer-date">December 2025</p>
         </div>
     </footer>

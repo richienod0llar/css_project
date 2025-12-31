@@ -135,7 +135,7 @@ strong {
 .byline {
     font-size: 1rem;
     color: var(--color-text-light);
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: calc(var(--spacing-xl) + var(--spacing-lg));
     animation: fadeInUp 1s ease-out 0.4s both;
 }
 
@@ -146,7 +146,7 @@ strong {
 
 .scroll-indicator {
     position: absolute;
-    bottom: var(--spacing-lg);
+    bottom: var(--spacing-md);
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -528,6 +528,7 @@ strong {
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--spacing-md);
     margin: var(--spacing-lg) 0;
+    align-items: stretch;
 }
 
 .season-card {
@@ -538,6 +539,9 @@ strong {
     transition: transform 0.3s ease;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
 }
 
 .season-card:hover {
@@ -563,11 +567,47 @@ strong {
 
 .season-lightness {
     width: 100%;
-    background: linear-gradient(135deg, #f0f0f0, #d0d0d0);
     border-radius: 8px;
-    margin-bottom: var(--spacing-sm);
-    min-height: 150px;
-    transition: height 0.6s ease;
+    margin-bottom: var(--spacing-md);
+    transition: all 0.6s ease;
+    position: relative;
+    height: 180px;
+    background: rgba(0, 0, 0, 0.03);
+    display: flex;
+    align-items: flex-end;
+}
+
+.season-lightness::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: var(--bar-height, 50%);
+    background: linear-gradient(135deg, var(--season-color-1, #f0f0f0), var(--season-color-2, #d0d0d0));
+    border-radius: 8px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    transition: height 0.8s ease;
+}
+
+.season-card[data-season="resort"] .season-lightness::before {
+    --season-color-1: #fff9e6;
+    --season-color-2: #ffe066;
+}
+
+.season-card[data-season="spring"] .season-lightness::before {
+    --season-color-1: #ffe6f0;
+    --season-color-2: #ffb3d9;
+}
+
+.season-card[data-season="prefall"] .season-lightness::before {
+    --season-color-1: #ffeedd;
+    --season-color-2: #ffb380;
+}
+
+.season-card[data-season="fall"] .season-lightness::before {
+    --season-color-1: #e0e0e0;
+    --season-color-2: #666666;
 }
 
 .season-stat {
@@ -679,6 +719,234 @@ strong {
     text-align: center;
     color: var(--color-text-light);
     margin-top: var(--spacing-lg);
+}
+
+/* ============================================
+   FASHION CYCLES
+   ============================================ */
+.cycle-section {
+    background: linear-gradient(180deg, #ffffff 0%, #f9f9f9 100%);
+}
+
+.cycle-viz-container {
+    margin: var(--spacing-lg) 0;
+}
+
+.cycle-header {
+    text-align: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.cycle-header h3 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-sm);
+    color: var(--color-accent);
+}
+
+.cycle-subtitle {
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+}
+
+.cycle-comparison {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.cycle-card {
+    background: white;
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: var(--spacing-md);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cycle-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.cycle-palette-header {
+    margin-bottom: var(--spacing-md);
+}
+
+.cycle-palette-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-accent);
+}
+
+.cycle-palette-colors {
+    display: flex;
+    gap: 4px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.cycle-color-block {
+    flex: 1;
+    height: 32px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.cycle-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+}
+
+.cycle-decade-bar {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: 0.9rem;
+}
+
+.decade-label {
+    min-width: 60px;
+    font-weight: 500;
+    color: var(--color-text-light);
+}
+
+.bar-fill {
+    height: 24px;
+    background: linear-gradient(90deg, #e0e0e0, #c0c0c0);
+    border-radius: 4px;
+    min-width: 2px;
+    transition: width 0.5s ease;
+}
+
+.bar-fill.returned {
+    background: linear-gradient(90deg, #ff6b6b, #ff8787);
+}
+
+.count-label {
+    min-width: 30px;
+    text-align: right;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.cycle-status {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.cycle-status.returned {
+    background: rgba(255, 107, 107, 0.15);
+    color: #d63031;
+}
+
+.cycle-status.dormant {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--color-text-light);
+}
+
+.cycle-insight {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    flex-wrap: wrap;
+    margin: var(--spacing-lg) 0;
+    padding: var(--spacing-lg);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.insight-box {
+    text-align: center;
+    padding: var(--spacing-md);
+}
+
+.insight-number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: var(--color-highlight);
+    font-family: var(--font-serif);
+    line-height: 1;
+    margin-bottom: var(--spacing-xs);
+}
+
+.insight-label {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    max-width: 200px;
+}
+
+/* Decade Mirror Chart */
+.decade-mirror {
+    margin-top: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+.decade-mirror h4 {
+    font-size: 1.5rem;
+    margin-bottom: var(--spacing-xs);
+    color: var(--color-accent);
+}
+
+.chart-desc {
+    color: var(--color-text-light);
+    margin-bottom: var(--spacing-md);
+}
+
+.mirror-chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.mirror-row {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.mirror-label {
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.95rem;
+}
+
+.mirror-bar-container {
+    position: relative;
+    background: var(--color-alt-bg);
+    border-radius: 8px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.mirror-bar {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.8s ease;
+    min-width: 2px;
+}
+
+.mirror-value {
+    position: absolute;
+    left: var(--spacing-sm);
+    font-weight: 600;
+    color: var(--color-text);
+    font-size: 0.9rem;
+    mix-blend-mode: difference;
+    filter: invert(1);
 }
 
 /* ============================================
