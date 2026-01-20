@@ -1,3 +1,26 @@
+# Ignore all image data to keep only the important code and results
+chromatic_analysis_output/**/*.png
+chromatic_analysis_output/**/*.jpg
+chromatic_analysis_output/**/*.jpeg
+chromatic_analysis_output/**/*.gif
+chromatic_analysis_output/**/*.bmp
+chromatic_analysis_output/**/*.tiff
+chromatic_analysis_output/**/*.webp
+vogue_dataset_output/**/*.png
+vogue_dataset_output/**/*.jpg
+vogue_dataset_output/**/*.jpeg
+vogue_dataset_output/**/*.gif
+vogue_dataset_output/**/*.bmp
+vogue_dataset_output/**/*.tiff
+vogue_dataset_output/**/*.webp
+interactive_viz/chromatic_analysis_output/**/*.png
+interactive_viz/chromatic_analysis_output/**/*.jpg
+interactive_viz/chromatic_analysis_output/**/*.jpeg
+interactive_viz/chromatic_analysis_output/**/*.gif
+interactive_viz/chromatic_analysis_output/**/*.bmp
+interactive_viz/chromatic_analysis_output/**/*.tiff
+interactive_viz/chromatic_analysis_output/**/*.webp
+
 # Vogue Image Datasets (large files - 60,000+ images)
 vogue_runway_*/
 vogue_runway_030/
