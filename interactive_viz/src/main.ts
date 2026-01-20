@@ -51,6 +51,8 @@ interface PaletteNames {
 const PALETTE_COLORS: PaletteColors = {
     '001': ['#8B7E74', '#C4B5A0', '#E8DCC4'],
     '002': ['#D4A5A5', '#B08B8B', '#8B6F6F'],
+    '003': ['#5B7E91', '#93B5C6', '#BBC8D4', '#D4E2E8'],
+    '004': ['#A88E87', '#E8D4CD', '#EAD7CE', '#F4E9E3'],
     '005': ['#5C6D7C', '#8B9DAC', '#B0BCC9'],
     '006': ['#9CA69B', '#B8C2B7', '#D4DED3'],
     '007': ['#7B6F4F', '#9A8B6E', '#B8A78D'],
@@ -60,16 +62,37 @@ const PALETTE_COLORS: PaletteColors = {
     '011': ['#546856', '#788A7A', '#9CAC9E'],
     '013': ['#A8C5B7', '#8EAFA1', '#74998B'],
     '014': ['#8B5E6F', '#B07A8F', '#D496AF'],
+    '016': ['#C4972F', '#D9B44A', '#E5C76B', '#EFE0A2'],
+    '017': ['#E03C8A', '#ED6EA7', '#F49EC0', '#FAD0DC'],
+    '018': ['#00A497', '#00BFB0', '#5CD1C7', '#A3E5DE'],
+    '019': ['#F5B800', '#F8C500', '#FAD64B', '#FCE78C'],
     '020': ['#F0D4C8', '#E8C4B8', '#E0B4A8'],
     '021': ['#7FA3CC', '#6F93BC', '#5F83AC'],
+    '022': ['#8FC31F', '#A7D143', '#BFDD6E', '#D9EBA3'],
+    '023': ['#00A3AF', '#00BCC9', '#4DD2DC', '#99E5EC'],
+    '024': ['#D71345', '#E64166', '#F07B95', '#F9BEC7'],
     '025': ['#8B6F9C', '#A585B3', '#BF9BCA'],
     '026': ['#9B9B9B', '#B5B5B5', '#CFCFCF'],
-    '027': ['#2E2E2E', '#4A4A4A', '#666666']
+    '027': ['#2E2E2E', '#4A4A4A', '#666666'],
+    '029': ['#C3D825', '#D3E445', '#E3F06B', '#F3FC9B'],
+    '030': ['#FEEEED', '#FDD5D3', '#FCBCB9', '#FBA3A0'],
+    '031': ['#8B4513', '#A0522D', '#BC8F8F'],
+    '032': ['#6A5ACD', '#7B68EE', '#9370DB'],
+    '033': ['#228B22', '#32CD32', '#00FA9A'],
+    '034': ['#FF7F50', '#FF6347', '#FA8072'],
+    '035': ['#008080', '#20B2AA', '#48D1CC'],
+    '036': ['#E6E6FA', '#D8BFD8', '#DDA0DD'],
+    '037': ['#808000', '#6B8E23', '#556B2F'],
+    '038': ['#800000', '#8B0000', '#A52A2A'],
+    '039': ['#40E0D0', '#00CED1', '#00FFFF'],
+    '040': ['#FFD700', '#DAA520', '#B8860B']
 };
 
 const PALETTE_NAMES: PaletteNames = {
     '001': 'Plum Mouse Gray (紅梅鼠)',
     '002': 'Shrimp Brown (海老茶)',
+    '003': 'Fukagawa Mouse Gray',
+    '004': 'Cherry Mouse Gray',
     '005': 'Indigo Mouse Gray (藍鼠)',
     '006': 'Willow Mouse Gray (柳鼠)',
     '007': 'Nightingale Brown (鶯茶)',
@@ -79,11 +102,30 @@ const PALETTE_NAMES: PaletteNames = {
     '011': 'Nightingale Green (鶯緑)',
     '013': 'Celadon (青磁)',
     '014': 'Azuki Bean Red (小豆)',
+    '016': 'Mustard (芥子色)',
+    '017': 'Peony Pink (牡丹色)',
+    '018': 'Blue-Green (青緑)',
+    '019': 'Yamabuki Yellow (山吹色)',
     '020': 'Peach (桃)',
     '021': 'Dayflower Blue (露草)',
+    '022': 'Spring Green (萌黄)',
+    '023': 'Light Indigo (浅葱色)',
+    '024': 'Crimson Red (紅色)',
     '025': 'Purple (紫)',
     '026': 'Mouse Gray (鼠)',
-    '027': 'Ink Black (墨)'
+    '027': 'Ink Black (墨)',
+    '029': 'Young Grass Green (若草色)',
+    '030': 'Cherry Blossom Pink (桜色)',
+    '031': 'Burnt Sienna',
+    '032': 'Slate Blue',
+    '033': 'Forest Green',
+    '034': 'Coral',
+    '035': 'Teal',
+    '036': 'Lavender',
+    '037': 'Olive',
+    '038': 'Maroon',
+    '039': 'Turquoise',
+    '040': 'Gold'
 };
 
 // Global state
@@ -375,19 +417,25 @@ function createPaletteExplorer(): void {
     if (!paletteGrid) return;
     
     const paletteCounts: { [key: string]: number } = {};
+    const paletteLabels: { [key: string]: string } = {};
+    const EXCLUDED = new Set(['012', '015', '028']);
     paletteData.forEach(d => {
         const id = String(d.palette_id).padStart(3, '0');
+        if (EXCLUDED.has(id)) return;
         paletteCounts[id] = (paletteCounts[id] || 0) + d.count;
+        if (!paletteLabels[id] && typeof d.palette_name === 'string' && d.palette_name.trim().length > 0) {
+            paletteLabels[id] = d.palette_name;
+        }
     });
     
-    const topPalettes = Object.entries(paletteCounts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 16);
+    const sortedPalettes = Object.entries(paletteCounts)
+        .sort((a, b) => b[1] - a[1]);
     
-    topPalettes.forEach(([id, count]) => {
+    sortedPalettes.forEach(([id, count]) => {
         const card = document.createElement('div');
         card.className = 'palette-card';
         card.dataset.paletteId = id;
+        const displayName = paletteLabels[id] || PALETTE_NAMES[id] || `Palette ${id}`;
         
         const colorsDiv = document.createElement('div');
         colorsDiv.className = 'palette-card-colors';
@@ -402,7 +450,7 @@ function createPaletteExplorer(): void {
         
         const nameDiv = document.createElement('div');
         nameDiv.className = 'palette-card-name';
-        nameDiv.textContent = PALETTE_NAMES[id] || `Palette ${id}`;
+        nameDiv.textContent = displayName;
         
         card.appendChild(colorsDiv);
         card.appendChild(nameDiv);
@@ -412,12 +460,14 @@ function createPaletteExplorer(): void {
         paletteGrid.appendChild(card);
     });
     
-    if (topPalettes.length > 0) {
-        selectPalette(topPalettes[0][0], topPalettes[0][1]);
+    if (sortedPalettes.length > 0) {
+        const firstId = sortedPalettes[0][0];
+        const firstCount = sortedPalettes[0][1];
+        selectPalette(firstId, firstCount, paletteLabels[firstId]);
     }
 }
 
-function selectPalette(id: string, totalCount: number): void {
+function selectPalette(id: string, totalCount: number, labelOverride?: string): void {
     document.querySelectorAll('.palette-card').forEach(card => {
         card.classList.remove('selected');
     });
@@ -425,7 +475,7 @@ function selectPalette(id: string, totalCount: number): void {
     
     const nameEl = document.getElementById('selected-palette-name');
     if (nameEl) {
-        nameEl.textContent = PALETTE_NAMES[id] || `Palette ${id}`;
+        nameEl.textContent = labelOverride || PALETTE_NAMES[id] || `Palette ${id}`;
     }
     
     const colorsDiv = document.getElementById('selected-palette-colors');
