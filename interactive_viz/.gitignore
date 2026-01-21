@@ -44,3 +44,4 @@ temp/
 !chromatic_analysis_output/
 !chromatic_analysis_output/*.csv
 
+vogue_runway_*/
