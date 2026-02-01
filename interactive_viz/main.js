@@ -480,7 +480,7 @@ function selectPalette(id, totalCount, labelOverride) {
     
     // Update description
     const descriptions = {
-        '027': 'Ink Black dominated fashion throughout our dataset, appearing in over one-third of all images. This dark, monochromatic palette represents the shift toward minimalism and sophistication in high fashion.',
+        '027': 'Ink Black dominated fashion throughout our dataset, appearing in over one-quarter of all images. This dark, monochromatic palette represents the shift toward minimalism and sophistication in high fashion.',
         '026': 'Mouse Gray represents the neutral, understated aesthetic that came to define modern luxury. These soft grays embody "quiet luxury" and timeless elegance.',
         '005': 'Indigo Mouse Gray combines cool, subdued tones that evoke calm and restraint—hallmarks of contemporary fashion.',
         '014': 'Azuki Bean Red provides rare moments of warmth and color in an otherwise desaturated landscape.',
