@@ -279,7 +279,7 @@ strong {
 .sticky-viz {
     position: sticky;
     top: 100px;
-    height: 600px;
+    height: 680px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -293,7 +293,7 @@ strong {
 }
 
 .step {
-    min-height: 600px;
+    min-height: 680px;
     display: flex;
     align-items: center;
     opacity: 0.3;
@@ -762,7 +762,7 @@ strong {
 }
 
 .timeline-summary {
-    height: 200px;
+    height: 260px;
     /* Will be populated by D3 */
 }
 

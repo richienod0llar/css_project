@@ -20,12 +20,10 @@ const PALETTE_COLORS = {
     '014': ['#8B5E6F', '#B07A8F', '#D496AF'],
     '016': ['#C4972F', '#D9B44A', '#E5C76B', '#EFE0A2'],
     '017': ['#E03C8A', '#ED6EA7', '#F49EC0', '#FAD0DC'],
-    '018': ['#00A497', '#00BFB0', '#5CD1C7', '#A3E5DE'],
     '019': ['#F5B800', '#F8C500', '#FAD64B', '#FCE78C'],
     '020': ['#F0D4C8', '#E8C4B8', '#E0B4A8'],
     '021': ['#7FA3CC', '#6F93BC', '#5F83AC'],
     '022': ['#8FC31F', '#A7D143', '#BFDD6E', '#D9EBA3'],
-    '023': ['#00A3AF', '#00BCC9', '#4DD2DC', '#99E5EC'],
     '024': ['#D71345', '#E64166', '#F07B95', '#F9BEC7'],
     '025': ['#8B6F9C', '#A585B3', '#BF9BCA'],
     '026': ['#9B9B9B', '#B5B5B5', '#CFCFCF'],
@@ -60,12 +58,10 @@ const PALETTE_NAMES = {
     '014': 'Azuki Bean Red (小豆)',
     '016': 'Mustard (芥子色)',
     '017': 'Peony Pink (牡丹色)',
-    '018': 'Blue-Green (青緑)',
     '019': 'Yamabuki Yellow (山吹色)',
     '020': 'Peach (桃)',
     '021': 'Dayflower Blue (露草)',
     '022': 'Spring Green (萌黄)',
-    '023': 'Light Indigo (浅葱色)',
     '024': 'Crimson Red (紅色)',
     '025': 'Purple (紫)',
     '026': 'Mouse Gray (鼠)',
@@ -253,11 +249,15 @@ function drawLightnessChart(ctx, width, height, highlightYear) {
     const chartWidth = width - padding * 2;
     const chartHeight = height - padding * 2;
     
-    // Find min/max for scaling
-    const minLightness = 100;
-    const maxLightness = 160;
-    const minYear = 1989;
-    const maxYear = 2023;
+    // Find min/max for scaling based on data, with a small buffer
+    const lightnessValues = yearlyData.map(d => d.mean_lightness).filter(v => Number.isFinite(v));
+    const yearValues = yearlyData.map(d => d.year).filter(v => Number.isFinite(v));
+    const minLightnessRaw = Math.min(...lightnessValues);
+    const maxLightnessRaw = Math.max(...lightnessValues);
+    const minLightness = Math.floor(minLightnessRaw - 3);
+    const maxLightness = Math.ceil(maxLightnessRaw + 3);
+    const minYear = Math.min(...yearValues);
+    const maxYear = Math.max(...yearValues);
     
     // Draw axes
     ctx.strokeStyle = '#e0e0e0';
@@ -398,7 +398,7 @@ function createPaletteExplorer() {
     // Get palettes with labels from data (fallback to static map)
     const paletteCounts = {};
     const paletteLabels = {};
-    const EXCLUDED = new Set(['012', '015', '028']);
+    const EXCLUDED = new Set(['012', '015', '018', '023', '028']);
     paletteData.forEach(d => {
         const id = String(d.palette_id).padStart(3, '0');
         if (EXCLUDED.has(id)) return;
@@ -771,7 +771,7 @@ function createFinalVisualization() {
     
     // Create a simple D3 sparkline
     const width = container.clientWidth;
-    const height = 200;
+    const height = 260;
     
     const svg = d3.select(container)
         .append('svg')
@@ -786,12 +786,21 @@ function createFinalVisualization() {
         .attr('transform', `translate(${margin.left},${margin.top})`);
     
     // Scales
+    const years = yearlyData.map(d => d.year).filter(v => Number.isFinite(v));
+    const lightnessValues = yearlyData.map(d => d.mean_lightness).filter(v => Number.isFinite(v));
+    const minYear = Math.min(...years);
+    const maxYear = Math.max(...years);
+    const minLightnessRaw = Math.min(...lightnessValues);
+    const maxLightnessRaw = Math.max(...lightnessValues);
+    const minLightness = Math.floor(minLightnessRaw - 3);
+    const maxLightness = Math.ceil(maxLightnessRaw + 3);
+
     const x = d3.scaleLinear()
-        .domain([1989, 2023])
+        .domain([minYear, maxYear])
         .range([0, chartWidth]);
     
     const y = d3.scaleLinear()
-        .domain([100, 160])
+        .domain([minLightness, maxLightness])
         .range([chartHeight, 0]);
     
     // Line generator
