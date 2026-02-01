@@ -352,7 +352,7 @@ function updateLightnessVisualization(step) {
 
 function createDecadeVisualization() {
     const decadeBlocks = document.querySelectorAll('.decade-block');
-    const distances = [5.36, 4.44, 0.99, 0.60];
+    const distances = [3.97, 3.27, 1.24, 0.54];
     
     decadeBlocks.forEach((block, i) => {
         // Set initial height based on some metric
@@ -373,10 +373,10 @@ function updateDecadeVisualization(step) {
     // Highlight relevant blocks and show distance
     const distances = [
         { decades: [], label: 'Color distance (ΔE 2000)' },
-        { decades: [0, 1], label: '1980s → 1990s: ΔE = 5.36' },
-        { decades: [1, 2], label: '1990s → 2000s: ΔE = 4.44' },
-        { decades: [2, 3], label: '2000s → 2010s: ΔE = 0.99' },
-        { decades: [3, 4], label: '2010s → 2020s: ΔE = 0.60' }
+        { decades: [0, 1], label: '1980s → 1990s: ΔE = 3.97 (post-Cold War optimism)' },
+        { decades: [1, 2], label: '1990s → 2000s: ΔE = 3.27 (global expansion)' },
+        { decades: [2, 3], label: '2000s → 2010s: ΔE = 1.24 (stabilization after 9/11)' },
+        { decades: [3, 4], label: '2010s → 2020s: ΔE = 0.54 (steady, muted palette)' }
     ];
     
     if (step < distances.length) {

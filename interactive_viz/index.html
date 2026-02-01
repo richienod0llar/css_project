@@ -24,6 +24,18 @@
         <div class="hero-viz" id="hero-viz"></div>
     </section>
 
+    <!-- Project Implementation -->
+    <section class="narrative-section alt-bg">
+        <div class="container">
+            <div class="narrative-text">
+                <h2>How this project was built</h2>
+                <p class="lead">I started with the Vogue Runway image dataset, cleaned and merged the metadata, and then extracted color features from each photo.</p>
+                <p>Each image was resized for efficient processing, clustered in LAB color space to find dominant colors, and matched to Sanzo Wada palettes using ΔE 2000. I then aggregated trends by year, decade, designer, and season to quantify shifts in lightness, saturation, and palette diversity.</p>
+                <p>Finally, I translated those results into interactive D3 visualizations and scrollytelling sections, and built this site to connect the analysis to the story of fashion’s chromatic evolution.</p>
+            </div>
+        </div>
+    </section>
+
     <!-- Introduction -->
     <section class="narrative-section">
         <div class="container">
@@ -119,26 +131,51 @@
                 <div class="step" data-step="1">
                     <div class="step-content">
                         <h3>1980s → 1990s: The Biggest Jump</h3>
-                        <p>The transition from the 1980s to 1990s showed a color distance of <strong class="highlight-text">5.36</strong>—the largest shift in our entire dataset. Fashion was transforming rapidly.</p>
+                        <p>The transition from the 1980s to 1990s showed a color distance of <strong class="highlight-text">3.97</strong>—the largest shift in our dataset. Fashion was transforming rapidly.</p>
                     </div>
                 </div>
                 <div class="step" data-step="2">
                     <div class="step-content">
                         <h3>1990s → 2000s: Still Changing</h3>
-                        <p>The next decade brought another significant shift of <strong class="highlight-text">4.44</strong>. Fashion was still searching for its new identity.</p>
+                        <p>The next decade brought another significant shift of <strong class="highlight-text">3.27</strong>. Fashion was still searching for its new identity.</p>
                     </div>
                 </div>
                 <div class="step" data-step="3">
                     <div class="step-content">
                         <h3>2000s → 2010s: Stabilization</h3>
-                        <p>Then something changed. The color distance dropped to just <strong class="highlight-text">0.99</strong>—a <strong>78% decrease</strong>. Fashion had found its new aesthetic.</p>
+                        <p>Then something changed. The color distance dropped to just <strong class="highlight-text">1.24</strong>—a clear sign designers had found their new aesthetic.</p>
                     </div>
                 </div>
                 <div class="step" data-step="4">
                     <div class="step-content">
                         <h3>2010s → 2020s: The New Normal</h3>
-                        <p>The 2020s show the smallest shift yet: just <strong class="highlight-text">0.60</strong>. For over 15 years, fashion has maintained a remarkably consistent color palette.</p>
+                        <p>The 2020s show the smallest shift yet: <strong class="highlight-text">0.54</strong>. For over 15 years, fashion has maintained a remarkably consistent color palette.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Context Section -->
+    <section class="narrative-section alt-bg" id="context-section">
+        <div class="container">
+            <div class="narrative-text">
+                <h2>Color shifts after the Cold War</h2>
+                <p class="lead">The largest chromatic jump—from the saturated, neon-heavy 1980s into the muted ’90s—lines up with a seismic political reset. The fall of the Berlin Wall (1989), German reunification, and the collapse of the Soviet Union (1991) opened fashion to a more global, minimalist sensibility. Designers traded bold, ideological statements for quieter palettes that resonated with this newfound international optimism.</p>
+                <p>By the end of the 1990s, color distance was still high because collections were continuing to rethink identity as globalization accelerated. After the trauma of 2001 and the ensuing cultural uncertainty, the runway shifted darker and denser, with mean lightness falling from ~130 in 2000 to ~115 just a year later while saturation climbed—reflecting a post-9/11, post-industrial mood that was more defensive than celebratory.</p>
+            </div>
+            <div class="culture-grid">
+                <div class="culture-card">
+                    <p class="culture-year">1989–1991</p>
+                    <p class="culture-detail"><strong>ΔE 2000 = 3.97</strong><br>Fall of the Berlin Wall + Soviet collapse. The palette shift mirrors a world that was suddenly open to cross-border collaborations and streamlined neutrality.</p>
+                </div>
+                <div class="culture-card">
+                    <p class="culture-year">1992–1999</p>
+                    <p class="culture-detail"><strong>ΔE 2000 ≥ 3.27</strong><br>European integration & early web culture. Fashion stayed in flux while brands absorbed new global references.</p>
+                </div>
+                <div class="culture-card">
+                    <p class="culture-year">2000–2002</p>
+                    <p class="culture-detail"><strong>Lightness −15</strong><br>9/11, economic downturns, and the Afghanistan/Iraq wars drove palettes toward deep blues, grays, and protective blacks while saturation ticked up.</p>
                 </div>
             </div>
         </div>
