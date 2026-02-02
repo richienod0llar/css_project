@@ -54,6 +54,14 @@ body {
     overflow-x: hidden;
 }
 
+canvas,
+svg,
+img,
+video {
+    max-width: 100%;
+    height: auto;
+}
+
 body::before {
     content: "";
     position: fixed;
@@ -1144,6 +1152,52 @@ footer {
         --spacing-lg: 3rem;
         --spacing-xl: 5rem;
     }
+
+    .container,
+    .scrolly-content {
+        padding-left: var(--spacing-sm);
+        padding-right: var(--spacing-sm);
+    }
+
+    .hero {
+        min-height: auto;
+        padding: var(--spacing-lg) 0 var(--spacing-xl);
+    }
+
+    .hero-content {
+        padding: var(--spacing-lg) var(--spacing-sm);
+    }
+
+    .byline {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .scroll-indicator {
+        position: static;
+        transform: none;
+        margin-top: var(--spacing-md);
+    }
+
+    .narrative-text p,
+    .step-content p {
+        font-size: 1rem;
+    }
+
+    .sticky-viz {
+        height: 420px;
+    }
+
+    .step-content {
+        padding: var(--spacing-sm);
+    }
+
+    .stat-grid {
+        gap: var(--spacing-sm);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+    }
     
     .season-comparison {
         grid-template-columns: 1fr 1fr;
@@ -1160,8 +1214,95 @@ footer {
 }
 
 @media (max-width: 480px) {
+    :root {
+        --spacing-md: 1.25rem;
+        --spacing-lg: 2.5rem;
+        --spacing-xl: 4rem;
+    }
+
+    h1 {
+        font-size: clamp(2.1rem, 10vw, 3.2rem);
+    }
+
+    h2 {
+        font-size: clamp(1.6rem, 7vw, 2.4rem);
+    }
+
+    .lead {
+        font-size: 1.05rem;
+    }
+
     .season-comparison {
         grid-template-columns: 1fr;
+    }
+
+    .season-card {
+        min-height: auto;
+        padding: var(--spacing-sm);
+    }
+
+    .season-lightness {
+        height: 140px;
+    }
+
+    .stat-card {
+        padding: var(--spacing-sm);
+    }
+
+    .stat-number {
+        font-size: 2rem;
+    }
+
+    .stat-label {
+        letter-spacing: 0.5px;
+    }
+
+    .decade-comparison {
+        height: 260px;
+        padding: var(--spacing-sm);
+    }
+
+    .decade-block::after {
+        bottom: -24px;
+        font-size: 0.75rem;
+    }
+
+    .sticky-viz {
+        height: 320px;
+    }
+
+    .palette-grid {
+        grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    }
+
+    .palette-info {
+        padding: var(--spacing-md);
+    }
+
+    .palette-name {
+        font-size: 1.5rem;
+    }
+
+    .palette-colors {
+        height: 64px;
+    }
+
+    .palette-stats {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+
+    .cycle-insight {
+        padding: var(--spacing-md);
+    }
+
+    .designer-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xs);
+    }
+
+    .designer-value {
+        text-align: left;
     }
 }
 
