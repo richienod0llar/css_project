@@ -29,9 +29,29 @@
         <div class="container">
             <div class="narrative-text">
                 <h2>How this project was built</h2>
-                <p class="lead">I started with the Vogue Runway image dataset, cleaned and merged the metadata, and then extracted color features from each photo.</p>
-                <p>Each image was resized for efficient processing, clustered in LAB color space to find dominant colors, and matched to Sanzo Wada palettes using ΔE 2000. I then aggregated trends by year, decade, designer, and season to quantify shifts in lightness, saturation, and palette diversity.</p>
-                <p>Finally, I translated those results into interactive D3 visualizations and scrollytelling sections, and built this site to connect the analysis to the story of fashion’s chromatic evolution.</p>
+                <p class="lead">This project exists to make a long, qualitative debate about fashion’s “mood” measurable. By quantifying color across decades of runway imagery, we can test whether cultural narratives (like minimalism after the early 1990s) show up in the data.</p>
+                <p>Started with the <a href="https://archive.org/details/VogueRunway_dataset">Vogue Runway image dataset</a>, a separate metadata table was created with 3 datasets cleaned, de-duplicated and merged together so every photo had a year, season, designer, and collection type. Images were resized to 256×256 to standardize sampling and reduce compute without losing palette structure.</p>
+                <p>The core algorithm extracts dominant colors using K-Means (k=6) in LAB color space, which aligns with human perception better than RGB. For each image, the cluster centers become its palette; lightness (L*), chroma, and color diversity (cluster spread) are computed to capture both intensity and variety.</p>
+                <p>To compare across years, each image is matched to one of 37 <a href="https://sanzo-wada.dmbk.io/">Sanzo Wada</a> palettes</a>. The match uses ΔE 2000 <a href="https://hajim.rochester.edu/ece/sites/gsharma/papers/CIEDE2000CRNAFeb05.pdf">(CIEDE2000)</a> to find the closest palette by perceptual distance, creating a consistent “vocabulary” of colors for time-series analysis.</p>
+                <p>Finally, these metrics are aggregated by year, decade, designer, and season, validate the trends for outliers, and translate the results into D3 visualizations.</p>
+            </div>
+            <div class="methodology-grid">
+                <div class="method-card">
+                    <h4>Data Source</h4>
+                    <p>30,000 images from Vogue Runway (1988-2023), spanning 1,549 designers across Ready-to-Wear, Couture, and Menswear collections.</p>
+                </div>
+                <div class="method-card">
+                    <h4>Color Extraction</h4>
+                    <p>K-Means clustering (k=6) in LAB color space to identify dominant colors. Images resized to 256×256 pixels for efficiency.</p>
+                </div>
+                <div class="method-card">
+                    <h4>Palette Mapping</h4>
+                    <p>Each image matched to 37 unique Sanzo Wada palettes using ΔE 2000 (CIEDE2000), a perceptually uniform color difference metric.</p>
+                </div>
+                <div class="method-card">
+                    <h4>Analysis</h4>
+                    <p>Temporal trends calculated using weighted averages. Lightness (L*: 0-255), Saturation (Chroma), and Diversity (color cluster std. dev.) computed for each image.</p>
+                </div>
             </div>
         </div>
     </section>
@@ -125,13 +145,13 @@
                 <div class="step" data-step="0">
                     <div class="step-content">
                         <h3>Measuring the shift</h3>
-                        <p>Using the ΔE 2000 metric—a perceptually accurate measure of color difference—we can quantify how much fashion's color palette changed decade to decade.</p>
+                        <p>Using the ΔE 2000 metric: a perceptually accurate measure of color difference, we can quantify how much fashion's color palette changed decade to decade.</p>
                     </div>
                 </div>
                 <div class="step" data-step="1">
                     <div class="step-content">
                         <h3>1980s → 1990s: The Biggest Jump</h3>
-                        <p>The transition from the 1980s to 1990s showed a color distance of <strong class="highlight-text">3.97</strong>—the largest shift in our dataset. Fashion was transforming rapidly.</p>
+                        <p>The transition from the 1980s to 1990s showed a color distance of <strong class="highlight-text">3.97</strong>: the largest shift in our dataset. Fashion was transforming rapidly.</p>
                     </div>
                 </div>
                 <div class="step" data-step="2">
@@ -143,7 +163,7 @@
                 <div class="step" data-step="3">
                     <div class="step-content">
                         <h3>2000s → 2010s: Stabilization</h3>
-                        <p>Then something changed. The color distance dropped to just <strong class="highlight-text">1.24</strong>—a clear sign designers had found their new aesthetic.</p>
+                        <p>Then something changed. The color distance dropped to just <strong class="highlight-text">1.24</strong>, a clear sign designers had found their new aesthetic.</p>
                     </div>
                 </div>
                 <div class="step" data-step="4">
@@ -161,8 +181,9 @@
         <div class="container">
             <div class="narrative-text">
                 <h2>Color shifts after the Cold War</h2>
-                <p class="lead">The largest chromatic jump—from the saturated, neon-heavy 1980s into the muted ’90s—lines up with a seismic political reset. The fall of the Berlin Wall (1989), German reunification, and the collapse of the Soviet Union (1991) opened fashion to a more global, minimalist sensibility. Designers traded bold, ideological statements for quieter palettes that resonated with this newfound international optimism.</p>
-                <p>By the end of the 1990s, color distance was still high because collections were continuing to rethink identity as globalization accelerated. After the trauma of 2001 and the ensuing cultural uncertainty, the runway shifted darker and denser, with mean lightness falling from ~130 in 2000 to ~115 just a year later while saturation climbed—reflecting a post-9/11, post-industrial mood that was more defensive than celebratory.</p>
+                <p class="lead">The largest chromatic jump, from the saturated, neon-heavy 1980s into the muted ’90s, lines up with a seismic political reset. The fall of the Berlin Wall (1989), German reunification, and the collapse of the Soviet Union (1991) opened fashion to a more global, minimalist sensibility. Designers traded bold, ideological statements for quieter palettes that resonated with this newfound international optimism.</p>
+                <p>By the end of the 1990s, color distance remained elevated as collections rethought identity for an integrated world; the 4.44/3.27 swings show designers still searching for a new narrative. After 2001 the runway shifted darker and denser, with mean lightness falling from ~130 to ~115 in a single year while saturation climbed, capturing a post-9/11, post-industrial mood that felt defensive rather than celebratory.</p>
+                <p>Post-2005 the data finally settle: ΔE drops to 1.24 and then 0.54, and annual lightness/saturation hover around ~132 and ~11. That plateau correlates with the rise of “quiet luxury,” sustainability mandates, and digital-first retail, which encouraged designers to keep palettes restrained and consistent instead of chasing dramatic swings.</p>
             </div>
             <div class="culture-grid">
                 <div class="culture-card">
@@ -171,11 +192,15 @@
                 </div>
                 <div class="culture-card">
                     <p class="culture-year">1992–1999</p>
-                    <p class="culture-detail"><strong>ΔE 2000 ≥ 3.27</strong><br>European integration & early web culture. Fashion stayed in flux while brands absorbed new global references.</p>
+                    <p class="culture-detail"><strong>ΔE 2000 ≤ 3.27</strong><br>European integration & early web culture. Fashion stayed in flux while brands absorbed new global references.</p>
                 </div>
                 <div class="culture-card">
                     <p class="culture-year">2000–2002</p>
                     <p class="culture-detail"><strong>Lightness −15</strong><br>9/11, economic downturns, and the Afghanistan/Iraq wars drove palettes toward deep blues, grays, and protective blacks while saturation ticked up.</p>
+                </div>
+                <div class="culture-card">
+                    <p class="culture-year">2010–2025</p>
+                    <p class="culture-detail"><strong>ΔE 2000 = 0.54</strong><br>After 2005, quiet luxury, sustainability, and digital retail locked in consistent, neutral palettes. Mean lightness stayed around ~132 and saturation hovered near ~11, creating the stable minimalism we still see today.</p>
                 </div>
             </div>
         </div>
@@ -186,7 +211,7 @@
         <div class="container">
             <div class="narrative-text">
                 <h2>The rise of "Ink Black"</h2>
-                <p class="lead">To understand these shifts, we mapped each image to 37 unique palettes from <strong>Sanzo Wada's 1933 "Dictionary of Color Combinations"</strong>—a collection of traditional Japanese color harmonies.</p>
+                <p class="lead">To understand these shifts, we mapped each image to 37 unique palettes from <strong>Sanzo Wada's 1933 "Dictionary of Color Combinations"</strong>, a collection of traditional Japanese color combinations.</p>
                 <p>One palette dominated above all others: <strong>Ink Black</strong>, appearing in 8,352 images (27.8% of our dataset).</p>
             </div>
         </div>
@@ -236,7 +261,7 @@
                         <span class="big-number">157.1</span>
                         <span class="label">Lightness</span>
                     </div>
-                    <p class="season-desc">Brightest collections—vacation whites and pastels dominate</p>
+                    <p class="season-desc">Brightest collections: vacation whites and pastels dominate</p>
                 </div>
                 <div class="season-card" data-season="spring" style="--bar-height: 87.8%;">
                     <div class="season-header">
@@ -248,7 +273,7 @@
                         <span class="big-number">137.9</span>
                         <span class="label">Lightness</span>
                     </div>
-                    <p class="season-desc">Most saturated season—spring brings color back to runways</p>
+                    <p class="season-desc">Most saturated season: spring brings color back to runways</p>
                 </div>
                 <div class="season-card" data-season="prefall" style="--bar-height: 88.7%;">
                     <div class="season-header">
@@ -272,11 +297,11 @@
                         <span class="big-number">123.2</span>
                         <span class="label">Lightness</span>
                     </div>
-                    <p class="season-desc">Darkest collections—blacks, navies, and deep tones</p>
+                    <p class="season-desc">Darkest collections: blacks, navies, and deep tones</p>
                 </div>
             </div>
             <div class="narrative-text">
-                <p class="insight">Resort collections are <strong>28% lighter</strong> than Fall collections—showing that despite the minimalist trend, function and context still shape color choices.</p>
+                <p class="insight">Resort collections are <strong>28% lighter</strong> than Fall collections,showing that despite the minimalist trend, function and context still shape color choices.</p>
             </div>
         </div>
     </section>
@@ -299,7 +324,7 @@
         <div class="container">
             <div class="narrative-text">
                 <h2>What goes around, comes around</h2>
-                <p class="lead">But fashion is not just a linear progression. It's <strong>cyclical</strong>. Trends from past decades resurface—reimagined but recognizable.</p>
+                <p class="lead">But fashion is not just a linear progression. It's <strong>cyclical</strong>. Trends from past decades resurface, reimagined but recognizable.</p>
                 <p>The "20-year rule" of fashion suggests that styles return approximately two decades later. Our data confirms this pattern in color choices.</p>
             </div>
             
@@ -336,7 +361,7 @@
             </div>
 
             <div class="narrative-text">
-                <p class="insight">The browns, grays, and muted tones that defined 90s minimalism—think <strong>Calvin Klein</strong> and <strong>Jil Sander</strong>—have returned as the foundation of contemporary "quiet luxury." Fashion has come full circle.</p>
+                <p class="insight">The browns, grays, and muted tones that defined 90s minimalism, think <strong>Calvin Klein</strong> and <strong>Jil Sander</strong> have returned as the foundation of contemporary "quiet luxury." Fashion has come full circle.</p>
             </div>
         </div>
     </section>
@@ -352,34 +377,8 @@
                 <div class="final-viz" id="final-viz">
                     <div class="timeline-summary"></div>
                 </div>
-                <p class="final-insight">What was once a riot of color has become a whisper of gray—and history suggests it might soon riot again.</p>
+                <p class="final-note">All code and data available on <a href="https://github.com/richienod0llar/css_project" target="_blank">GitHub</a>.</p>
             </div>
-        </div>
-    </section>
-
-    <!-- Methodology -->
-    <section class="methodology-section">
-        <div class="container">
-            <h3>Methodology</h3>
-            <div class="methodology-grid">
-                <div class="method-card">
-                    <h4>Data Source</h4>
-                    <p>30,000 images from Vogue Runway (1988-2023), spanning 1,549 designers across Ready-to-Wear, Couture, and Menswear collections.</p>
-                </div>
-                <div class="method-card">
-                    <h4>Color Extraction</h4>
-                    <p>K-Means clustering (k=6) in LAB color space to identify dominant colors. Images resized to 256×256 pixels for efficiency.</p>
-                </div>
-                <div class="method-card">
-                    <h4>Palette Mapping</h4>
-                    <p>Each image matched to 37 unique Sanzo Wada palettes using ΔE 2000 (CIEDE2000)—a perceptually uniform color difference metric.</p>
-                </div>
-                <div class="method-card">
-                    <h4>Analysis</h4>
-                    <p>Temporal trends calculated using weighted averages. Lightness (L*: 0-255), Saturation (Chroma), and Diversity (color cluster std. dev.) computed for each image.</p>
-                </div>
-            </div>
-            <p class="methodology-note">All code and data available on <a href="https://github.com/yourusername/fashion-color-analysis" target="_blank">GitHub</a>.</p>
         </div>
     </section>
 
@@ -387,7 +386,7 @@
     <footer>
         <div class="container">
             <p class="footer-text">analysis and visualization by rudraksha samdhani</p>
-            <p class="footer-date">December 2025</p>
+            <p class="footer-date">February 2026</p>
         </div>
     </footer>
 
