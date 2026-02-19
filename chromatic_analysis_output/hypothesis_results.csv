@@ -1,0 +1,9 @@
+test_id,hypothesis,test_family,effect_size,p_value,n,q_value,significant_fdr_5pct
+H1,Lower lightness predicts higher aesthetic score,Spearman correlation,-0.23327986197716813,0.0,30000,0.0,True
+H2,Higher palette distance predicts higher aesthetic score,Spearman correlation,0.16137904427288932,3.6467215124711545e-174,30000,7.293443024942309e-174,True
+H3,Higher saturation predicts higher aesthetic score,Spearman correlation,0.14090412201318273,7.660041628839627e-133,30000,1.0213388838452836e-132,True
+H4,Category groups differ in aesthetic score,One-way ANOVA,0.02950834581378618,5.746660643674104e-194,30000,1.5324428383130945e-193,True
+H5,Seasons differ in mean lightness,One-way ANOVA,0.057384030790427684,0.0,30000,0.0,True
+H6,Multivariable effect of lightness remains negative after controls,OLS coefficient,-0.14870949490943494,4.684766705097058e-138,30000,7.495626728155292e-138,True
+H7,Multivariable effect of saturation remains positive after controls,OLS coefficient,0.06231968869304767,4.0091711389405026e-26,30000,4.0091711389405026e-26,True
+H8,Multivariable effect of palette distance remains positive after controls,OLS coefficient,0.11381451546479189,3.992964919321728e-67,30000,4.563388479224832e-67,True

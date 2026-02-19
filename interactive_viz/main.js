@@ -85,6 +85,11 @@ let yearlyData = [];
 let paletteData = [];
 let decadeData = [];
 let designerData = [];
+let hypothesisData = [];
+let correlationData = [];
+let coefficientData = [];
+let categoryData = [];
+let seasonData = [];
 
 // ============================================
 // DATA LOADING
@@ -126,11 +131,43 @@ async function loadData() {
         const designerText = await designerResponse.text();
         designerData = parseCSV(designerText);
         console.log('Parsed designer data:', designerData.length, 'rows');
+
+        // Load hypothesis test results
+        console.log('Loading hypothesis data...');
+        const hypothesisResponse = await fetch('chromatic_analysis_output/hypothesis_results.csv');
+        if (!hypothesisResponse.ok) throw new Error(`HTTP error! status: ${hypothesisResponse.status}`);
+        hypothesisData = parseCSV(await hypothesisResponse.text());
+        console.log('Parsed hypothesis data:', hypothesisData.length, 'rows');
+
+        // Load top correlations
+        console.log('Loading correlation data...');
+        const correlationResponse = await fetch('chromatic_analysis_output/top_correlations.csv');
+        if (!correlationResponse.ok) throw new Error(`HTTP error! status: ${correlationResponse.status}`);
+        correlationData = parseCSV(await correlationResponse.text());
+        console.log('Parsed correlation data:', correlationData.length, 'rows');
+
+        // Load model coefficients
+        console.log('Loading coefficient data...');
+        const coefficientResponse = await fetch('chromatic_analysis_output/model_coefficients.csv');
+        if (!coefficientResponse.ok) throw new Error(`HTTP error! status: ${coefficientResponse.status}`);
+        coefficientData = parseCSV(await coefficientResponse.text());
+        console.log('Parsed coefficient data:', coefficientData.length, 'rows');
+
+        // Load category/season summaries
+        console.log('Loading category/season summaries...');
+        const categoryResponse = await fetch('chromatic_analysis_output/category_group_means.csv');
+        if (!categoryResponse.ok) throw new Error(`HTTP error! status: ${categoryResponse.status}`);
+        categoryData = parseCSV(await categoryResponse.text());
+        const seasonResponse = await fetch('chromatic_analysis_output/season_group_means.csv');
+        if (!seasonResponse.ok) throw new Error(`HTTP error! status: ${seasonResponse.status}`);
+        seasonData = parseCSV(await seasonResponse.text());
+        console.log('Parsed category rows:', categoryData.length, 'season rows:', seasonData.length);
         
         console.log('✅ Data loaded successfully!');
         console.log('📊 Yearly data points:', yearlyData.length);
         console.log('🎨 Palette data points:', paletteData.length);
         console.log('👔 Designer data points:', designerData.length);
+        console.log('🧪 Hypothesis rows:', hypothesisData.length);
         
         console.log('Initializing visualizations...');
         initializeVisualizations();
@@ -144,17 +181,45 @@ async function loadData() {
 }
 
 function parseCSV(text) {
-    const lines = text.trim().split('\n');
-    const headers = lines[0].split(',');
+    const lines = text.trim().split('\n').filter(Boolean);
+    if (lines.length === 0) return [];
+
+    const headers = parseCSVLine(lines[0]);
     return lines.slice(1).map(line => {
-        const values = line.split(',');
+        const values = parseCSVLine(line);
         const obj = {};
         headers.forEach((header, i) => {
-            const value = values[i];
-            obj[header] = isNaN(value) ? value : parseFloat(value);
+            const value = (values[i] ?? '').trim();
+            const num = Number(value);
+            obj[header] = value !== '' && Number.isFinite(num) ? num : value;
         });
         return obj;
     });
+}
+
+function parseCSVLine(line) {
+    const out = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') {
+                current += '"';
+                i += 1;
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (ch === ',' && !inQuotes) {
+            out.push(current);
+            current = '';
+        } else {
+            current += ch;
+        }
+    }
+    out.push(current);
+    return out;
 }
 
 // ============================================
@@ -167,6 +232,7 @@ function initializeVisualizations() {
     createDecadeVisualization();
     createPaletteExplorer();
     createDesignerChart();
+    createHypothesisDashboard();
     createCycleVisualization();
     createFinalVisualization();
     animateStatsOnScroll();
@@ -558,6 +624,244 @@ function createDesignerChart() {
     
     chartDiv.appendChild(lightestSection);
     chartDiv.appendChild(darkestSection);
+}
+
+// ============================================
+// HYPOTHESIS DASHBOARD
+// ============================================
+
+function createHypothesisDashboard() {
+    createHypothesisCards();
+    createCorrelationChart();
+    createCoefficientChart();
+    createCategoryChart();
+    createSeasonChart();
+}
+
+function createHypothesisCards() {
+    const grid = document.getElementById('hypothesis-grid');
+    if (!grid || hypothesisData.length === 0) return;
+
+    grid.innerHTML = '';
+    const cards = [...hypothesisData]
+        .sort((a, b) => Math.abs(b.effect_size) - Math.abs(a.effect_size))
+        .slice(0, 6);
+
+    cards.forEach(d => {
+        const card = document.createElement('div');
+        card.className = 'hypothesis-card';
+        const isSig = Boolean(d.significant_fdr_5pct) || d.significant_fdr_5pct === 'True';
+        const effect = Number(d.effect_size);
+        const direction = effect > 0 ? 'positive' : 'negative';
+
+        card.innerHTML = `
+            <div class="hypothesis-id">${d.test_id}</div>
+            <div class="hypothesis-text">${d.hypothesis}</div>
+            <div class="hypothesis-meta">${d.test_family}</div>
+            <div class="hypothesis-stats">
+                <span class="chip ${direction}">effect ${effect.toFixed(3)}</span>
+                <span class="chip ${isSig ? 'sig' : 'nonsig'}">${isSig ? 'FDR<0.05' : 'n.s.'}</span>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function createCorrelationChart() {
+    const container = document.getElementById('correlation-chart');
+    if (!container || correlationData.length === 0) return;
+    container.innerHTML = '';
+
+    const filtered = correlationData
+        .filter(d => d.outcome === 'aesthetic')
+        .sort((a, b) => Math.abs(b.spearman_r) - Math.abs(a.spearman_r))
+        .slice(0, 6);
+
+    const width = container.clientWidth || 480;
+    const height = 300;
+    const margin = { top: 18, right: 20, bottom: 50, left: 80 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const svg = d3.select(container).append('svg').attr('width', width).attr('height', height);
+    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const y = d3.scaleBand()
+        .domain(filtered.map(d => d.predictor.replace('mean_', '').replace('_', ' ')))
+        .range([0, chartHeight])
+        .padding(0.18);
+    const x = d3.scaleLinear().domain([-0.3, 0.3]).range([0, chartWidth]);
+
+    g.append('line')
+        .attr('x1', x(0)).attr('x2', x(0))
+        .attr('y1', 0).attr('y2', chartHeight)
+        .attr('stroke', '#8a8a8a');
+
+    g.selectAll('.corr-bar')
+        .data(filtered)
+        .enter()
+        .append('rect')
+        .attr('x', d => x(Math.min(0, d.spearman_r)))
+        .attr('y', d => y(d.predictor.replace('mean_', '').replace('_', ' ')))
+        .attr('width', d => Math.abs(x(d.spearman_r) - x(0)))
+        .attr('height', y.bandwidth())
+        .attr('fill', d => d.spearman_r >= 0 ? '#2a9d8f' : '#c0392b');
+
+    g.selectAll('.corr-label')
+        .data(filtered)
+        .enter()
+        .append('text')
+        .attr('x', d => x(d.spearman_r) + (d.spearman_r >= 0 ? 6 : -6))
+        .attr('y', d => y(d.predictor.replace('mean_', '').replace('_', ' ')) + y.bandwidth() / 2 + 4)
+        .attr('text-anchor', d => d.spearman_r >= 0 ? 'start' : 'end')
+        .style('font-size', '11px')
+        .text(d => d.spearman_r.toFixed(3));
+
+    g.append('g').call(d3.axisLeft(y).tickSize(0)).select('.domain').remove();
+    g.append('g')
+        .attr('transform', `translate(0,${chartHeight})`)
+        .call(d3.axisBottom(x).ticks(5));
+}
+
+function createCoefficientChart() {
+    const container = document.getElementById('coefficient-chart');
+    if (!container || coefficientData.length === 0) return;
+    container.innerHTML = '';
+
+    const wanted = ['z_lightness', 'z_saturation', 'z_distance', 'z_diversity', 'z_year'];
+    const rows = coefficientData.filter(d => wanted.includes(d.term));
+
+    const width = container.clientWidth || 480;
+    const height = 300;
+    const margin = { top: 18, right: 20, bottom: 70, left: 55 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const labels = {
+        z_lightness: 'lightness',
+        z_saturation: 'saturation',
+        z_distance: 'distance',
+        z_diversity: 'diversity',
+        z_year: 'year'
+    };
+
+    const svg = d3.select(container).append('svg').attr('width', width).attr('height', height);
+    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const yMax = Math.max(...rows.map(d => Math.abs(d.coef))) + 0.08;
+    const x = d3.scaleBand().domain(rows.map(d => labels[d.term] || d.term)).range([0, chartWidth]).padding(0.3);
+    const y = d3.scaleLinear().domain([-yMax, yMax]).range([chartHeight, 0]);
+
+    g.append('line')
+        .attr('x1', 0).attr('x2', chartWidth)
+        .attr('y1', y(0)).attr('y2', y(0))
+        .attr('stroke', '#8a8a8a');
+
+    g.selectAll('.coef-bar')
+        .data(rows)
+        .enter()
+        .append('rect')
+        .attr('x', d => x(labels[d.term] || d.term))
+        .attr('y', d => y(Math.max(0, d.coef)))
+        .attr('width', x.bandwidth())
+        .attr('height', d => Math.abs(y(d.coef) - y(0)))
+        .attr('fill', d => d.coef >= 0 ? '#2a9d8f' : '#c0392b');
+
+    g.selectAll('.coef-label')
+        .data(rows)
+        .enter()
+        .append('text')
+        .attr('x', d => x(labels[d.term] || d.term) + x.bandwidth() / 2)
+        .attr('y', d => d.coef >= 0 ? y(d.coef) - 6 : y(d.coef) + 14)
+        .attr('text-anchor', 'middle')
+        .style('font-size', '11px')
+        .text(d => d.coef.toFixed(3));
+
+    g.append('g')
+        .attr('transform', `translate(0,${chartHeight})`)
+        .call(d3.axisBottom(x))
+        .selectAll('text')
+        .attr('transform', 'rotate(-20)')
+        .style('text-anchor', 'end');
+
+    g.append('g').call(d3.axisLeft(y).ticks(5));
+}
+
+function createCategoryChart() {
+    const container = document.getElementById('category-chart');
+    if (!container || categoryData.length === 0) return;
+    container.innerHTML = '';
+
+    const width = container.clientWidth || 480;
+    const height = 300;
+    const margin = { top: 18, right: 20, bottom: 70, left: 55 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const svg = d3.select(container).append('svg').attr('width', width).attr('height', height);
+    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleBand().domain(categoryData.map(d => d.category)).range([0, chartWidth]).padding(0.25);
+    const yMin = d3.min(categoryData, d => d.aesthetic_mean) - 0.15;
+    const yMax = d3.max(categoryData, d => d.aesthetic_mean) + 0.15;
+    const y = d3.scaleLinear().domain([yMin, yMax]).range([chartHeight, 0]);
+
+    g.selectAll('.cat-bar')
+        .data(categoryData)
+        .enter()
+        .append('rect')
+        .attr('x', d => x(d.category))
+        .attr('y', d => y(d.aesthetic_mean))
+        .attr('width', x.bandwidth())
+        .attr('height', d => chartHeight - y(d.aesthetic_mean))
+        .attr('fill', '#6f4e7c');
+
+    g.append('g')
+        .attr('transform', `translate(0,${chartHeight})`)
+        .call(d3.axisBottom(x))
+        .selectAll('text')
+        .attr('transform', 'rotate(-20)')
+        .style('text-anchor', 'end');
+    g.append('g').call(d3.axisLeft(y).ticks(4));
+}
+
+function createSeasonChart() {
+    const container = document.getElementById('season-chart');
+    if (!container || seasonData.length === 0) return;
+    container.innerHTML = '';
+
+    const order = ['Spring', 'Fall', 'Resort', 'Pre-Fall'];
+    const sorted = [...seasonData].sort((a, b) => order.indexOf(a.season) - order.indexOf(b.season));
+
+    const width = container.clientWidth || 480;
+    const height = 300;
+    const margin = { top: 18, right: 20, bottom: 60, left: 55 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const svg = d3.select(container).append('svg').attr('width', width).attr('height', height);
+    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleBand().domain(sorted.map(d => d.season)).range([0, chartWidth]).padding(0.3);
+    const y = d3.scaleLinear()
+        .domain([
+            d3.min(sorted, d => d.lightness_mean) - 5,
+            d3.max(sorted, d => d.lightness_mean) + 5
+        ])
+        .range([chartHeight, 0]);
+
+    g.selectAll('.season-bar')
+        .data(sorted)
+        .enter()
+        .append('rect')
+        .attr('x', d => x(d.season))
+        .attr('y', d => y(d.lightness_mean))
+        .attr('width', x.bandwidth())
+        .attr('height', d => chartHeight - y(d.lightness_mean))
+        .attr('fill', '#2a9d8f');
+
+    g.append('g').attr('transform', `translate(0,${chartHeight})`).call(d3.axisBottom(x));
+    g.append('g').call(d3.axisLeft(y).ticks(4));
 }
 
 // ============================================

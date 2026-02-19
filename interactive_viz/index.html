@@ -319,6 +319,42 @@
         </div>
     </section>
 
+    <!-- Statistical Hypothesis Dashboard -->
+    <section class="narrative-section alt-bg" id="hypothesis-section">
+        <div class="container">
+            <div class="narrative-text">
+                <h2>Hypothesis testing dashboard</h2>
+                <p class="lead">Beyond descriptive trends, these tests quantify which relationships hold after controls and multiple-testing correction.</p>
+            </div>
+
+            <div class="hypothesis-grid" id="hypothesis-grid">
+                <!-- Populated by JavaScript -->
+            </div>
+
+            <div class="stats-viz-grid">
+                <div class="stats-viz-card">
+                    <h4>Top Correlations with Aesthetic</h4>
+                    <div id="correlation-chart" class="stats-viz"></div>
+                </div>
+                <div class="stats-viz-card">
+                    <h4>Controlled Effects (OLS)</h4>
+                    <div id="coefficient-chart" class="stats-viz"></div>
+                </div>
+            </div>
+
+            <div class="stats-viz-grid">
+                <div class="stats-viz-card">
+                    <h4>Aesthetic by Category</h4>
+                    <div id="category-chart" class="stats-viz"></div>
+                </div>
+                <div class="stats-viz-card">
+                    <h4>Lightness by Season</h4>
+                    <div id="season-chart" class="stats-viz"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Fashion Cycles Section -->
     <section class="narrative-section cycle-section" id="cycle-section">
         <div class="container">

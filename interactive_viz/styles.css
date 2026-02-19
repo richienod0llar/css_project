@@ -754,6 +754,99 @@ strong {
 }
 
 /* ============================================
+   HYPOTHESIS DASHBOARD
+   ============================================ */
+.hypothesis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-sm);
+    margin: var(--spacing-lg) 0;
+}
+
+.hypothesis-card {
+    background: white;
+    border-radius: 10px;
+    padding: var(--spacing-md);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.hypothesis-id {
+    display: inline-block;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.4rem;
+}
+
+.hypothesis-text {
+    font-size: 1rem;
+    line-height: 1.45;
+    margin-bottom: 0.6rem;
+}
+
+.hypothesis-meta {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    margin-bottom: 0.7rem;
+}
+
+.hypothesis-stats {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.chip {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    background: #efefef;
+}
+
+.chip.positive {
+    background: rgba(42, 157, 143, 0.15);
+    color: #1f776d;
+}
+
+.chip.negative {
+    background: rgba(192, 57, 43, 0.14);
+    color: #9b3125;
+}
+
+.chip.sig {
+    background: rgba(70, 130, 180, 0.16);
+    color: #355f87;
+}
+
+.chip.nonsig {
+    background: rgba(140, 140, 140, 0.18);
+    color: #5a5a5a;
+}
+
+.stats-viz-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.stats-viz-card {
+    background: white;
+    border-radius: 12px;
+    padding: var(--spacing-md);
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+}
+
+.stats-viz-card h4 {
+    margin-bottom: 0.75rem;
+}
+
+.stats-viz {
+    min-height: 300px;
+}
+
+/* ============================================
    CONCLUSION
    ============================================ */
 .conclusion-section {
@@ -1210,6 +1303,10 @@ footer {
     .designer-row {
         grid-template-columns: 120px 1fr 60px;
         font-size: 0.9rem;
+    }
+
+    .stats-viz-grid {
+        grid-template-columns: 1fr;
     }
 }
 
