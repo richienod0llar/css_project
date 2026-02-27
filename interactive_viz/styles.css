@@ -176,23 +176,24 @@ strong {
 
 .scroll-indicator {
     position: absolute;
-    bottom: var(--spacing-md);
+    bottom: clamp(0.75rem, 3vh, var(--spacing-md));
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
     animation: bounce 2s infinite;
+    width: min(220px, calc(100% - 1.5rem));
 }
 
 .scroll-indicator span {
-    font-size: 2rem;
+    font-size: clamp(1.25rem, 3.5vw, 2rem);
     display: block;
     color: var(--color-accent);
 }
 
 .scroll-indicator p {
-    font-size: 0.875rem;
+    font-size: clamp(0.72rem, 2.4vw, 0.875rem);
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.2px;
     margin-top: var(--spacing-xs);
     color: var(--color-text-light);
 }
@@ -453,6 +454,7 @@ strong {
     border-radius: 6px;
     font-size: 1rem;
     font-weight: 600;
+    max-width: calc(100% - (var(--spacing-md) * 2));
 }
 
 /* ============================================
@@ -846,6 +848,12 @@ strong {
     min-height: 300px;
 }
 
+.stats-viz svg {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+}
+
 /* ============================================
    CONCLUSION
    ============================================ */
@@ -1211,6 +1219,18 @@ footer {
     }
 }
 
+@keyframes bounce-vertical {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
 /* ============================================
    RESPONSIVE
    ============================================ */
@@ -1259,16 +1279,23 @@ footer {
 
     .hero-content {
         padding: var(--spacing-lg) var(--spacing-sm);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .byline {
-        margin-bottom: var(--spacing-lg);
+        margin-bottom: var(--spacing-sm);
     }
 
     .scroll-indicator {
         position: static;
-        transform: none;
-        margin-top: var(--spacing-md);
+        transform: translateY(0);
+        width: auto;
+        margin-top: var(--spacing-sm);
+        margin-left: auto;
+        margin-right: auto;
+        animation: bounce-vertical 2s infinite;
     }
 
     .narrative-text p,
@@ -1276,8 +1303,12 @@ footer {
         font-size: 1rem;
     }
 
+    .scrolly-content {
+        gap: var(--spacing-md);
+    }
+
     .sticky-viz {
-        height: 420px;
+        height: min(64vh, 420px);
     }
 
     .step-content {
@@ -1308,6 +1339,23 @@ footer {
     .stats-viz-grid {
         grid-template-columns: 1fr;
     }
+
+    .cycle-comparison {
+        grid-template-columns: 1fr;
+    }
+
+    .mirror-row {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xs);
+    }
+
+    .mirror-label {
+        font-size: 0.9rem;
+    }
+
+    .mirror-bar-container {
+        height: 42px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -1327,6 +1375,23 @@ footer {
 
     .lead {
         font-size: 1.05rem;
+    }
+
+    .container,
+    .scrolly-content {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    .narrative-section,
+    .palette-section,
+    .conclusion-section {
+        padding-top: var(--spacing-lg);
+        padding-bottom: var(--spacing-lg);
+    }
+
+    #context-section {
+        padding-top: calc(var(--spacing-xl) + 3.3rem);
     }
 
     .season-comparison {
@@ -1368,6 +1433,14 @@ footer {
         height: 320px;
     }
 
+    .viz-label {
+        top: var(--spacing-sm);
+        left: var(--spacing-sm);
+        font-size: 0.9rem;
+        padding: 0.65rem 0.75rem;
+        max-width: calc(100% - (var(--spacing-sm) * 2));
+    }
+
     .palette-grid {
         grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     }
@@ -1400,6 +1473,50 @@ footer {
 
     .designer-value {
         text-align: left;
+    }
+
+    .cycle-header h3 {
+        font-size: 1.5rem;
+    }
+
+    .cycle-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .cycle-card {
+        padding: var(--spacing-sm);
+    }
+
+    .cycle-decade-bar {
+        gap: 0.45rem;
+        font-size: 0.82rem;
+    }
+
+    .decade-label {
+        min-width: 46px;
+    }
+
+    .count-label {
+        min-width: 24px;
+        font-size: 0.8rem;
+    }
+
+    .mirror-value {
+        font-size: 0.8rem;
+    }
+
+    .stats-viz {
+        min-height: 250px;
+    }
+}
+
+@media (hover: none) {
+    .palette-card:hover,
+    .stat-card:hover,
+    .season-card:hover,
+    .cycle-card:hover,
+    .decade-block:hover {
+        transform: none;
     }
 }
 

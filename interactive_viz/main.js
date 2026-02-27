@@ -888,6 +888,7 @@ function createCycleVisualization() {
 function createCycleComparison() {
     const container = document.getElementById('cycle-comparison');
     if (!container || paletteData.length === 0) return;
+    container.innerHTML = '';
     
     // Analyze palette recurrence across decades
     const palettesByDecade = {};
@@ -1005,6 +1006,7 @@ function createCycleComparison() {
 function createDecadeMirrorChart() {
     const container = document.getElementById('mirror-chart');
     if (!container || paletteData.length === 0) return;
+    container.innerHTML = '';
     
     // Calculate palette overlap between decades
     const decades = [1990, 2000, 2010, 2020];
@@ -1084,6 +1086,7 @@ function createDecadeMirrorChart() {
 function createFinalVisualization() {
     const container = document.querySelector('.timeline-summary');
     if (!container || yearlyData.length === 0) return;
+    container.innerHTML = '';
     
     // Create a simple D3 sparkline
     const width = container.clientWidth;
@@ -1233,13 +1236,28 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Handle window resize
+let resizeTimeout;
 window.addEventListener('resize', () => {
-    const canvas = document.getElementById('lightness-canvas');
-    if (canvas) {
-        const container = canvas.parentElement;
-        canvas.width = container.clientWidth;
-        canvas.height = container.clientHeight;
-        createLightnessVisualization();
+    if (resizeTimeout) {
+        window.clearTimeout(resizeTimeout);
     }
+
+    resizeTimeout = window.setTimeout(() => {
+        const canvas = document.getElementById('lightness-canvas');
+        if (canvas) {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = container.clientHeight;
+            createLightnessVisualization();
+        }
+
+        // Re-render responsive D3 charts after viewport changes.
+        createCorrelationChart();
+        createCoefficientChart();
+        createCategoryChart();
+        createSeasonChart();
+        createCycleVisualization();
+        createFinalVisualization();
+    }, 150);
 });
 
