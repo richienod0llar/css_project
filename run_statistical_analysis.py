@@ -268,6 +268,11 @@ def main() -> None:
     k_season = len(groups_season)
     eta_season = (f_season * (k_season - 1)) / (f_season * (k_season - 1) + (n - k_season))
 
+    groups_section = [g["aesthetic"].to_numpy() for _, g in df.groupby("section")]
+    f_section, p_section = stats.f_oneway(*groups_section)
+    k_section = len(groups_section)
+    eta_section = (f_section * (k_section - 1)) / (f_section * (k_section - 1) + (n - k_section))
+
     # -----------------------------
     # Tag effects (point-biserial)
     # -----------------------------
@@ -412,6 +417,26 @@ def main() -> None:
                 "effect_size": dist_row["coef"],
                 "p_value": dist_row["p_value"],
                 "n": int(dist_row["n_obs"]),
+            },
+            {
+                "test_id": "H9",
+                "hypothesis": "Section groups differ in aesthetic score",
+                "test_family": "One-way ANOVA",
+                "effect_size": eta_section,
+                "p_value": p_section,
+                "n": len(df),
+            },
+            {
+                "test_id": "H10",
+                "hypothesis": "Negative lightness-aesthetic link persists within-year",
+                "test_family": "Within-year Spearman correlation",
+                "effect_size": corr_df.query("outcome == 'aesthetic_wy' and predictor == 'mean_lightness_wy'")[
+                    "spearman_r"
+                ].iloc[0],
+                "p_value": corr_df.query("outcome == 'aesthetic_wy' and predictor == 'mean_lightness_wy'")[
+                    "spearman_p"
+                ].iloc[0],
+                "n": len(df),
             },
         ]
     )

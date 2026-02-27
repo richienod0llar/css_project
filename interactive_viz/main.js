@@ -644,8 +644,20 @@ function createHypothesisCards() {
 
     grid.innerHTML = '';
     const cards = [...hypothesisData]
-        .sort((a, b) => Math.abs(b.effect_size) - Math.abs(a.effect_size))
-        .slice(0, 6);
+        .sort((a, b) => {
+            const aq = Number.isFinite(Number(a.q_value)) ? Number(a.q_value) : Number.POSITIVE_INFINITY;
+            const bq = Number.isFinite(Number(b.q_value)) ? Number(b.q_value) : Number.POSITIVE_INFINITY;
+            if (aq !== bq) return aq - bq;
+
+            const ap = Number.isFinite(Number(a.p_value)) ? Number(a.p_value) : Number.POSITIVE_INFINITY;
+            const bp = Number.isFinite(Number(b.p_value)) ? Number(b.p_value) : Number.POSITIVE_INFINITY;
+            if (ap !== bp) return ap - bp;
+
+            const aNum = Number(String(a.test_id).replace('H', ''));
+            const bNum = Number(String(b.test_id).replace('H', ''));
+            return aNum - bNum;
+        })
+        .slice(0, 8);
 
     cards.forEach(d => {
         const card = document.createElement('div');
