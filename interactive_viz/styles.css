@@ -855,6 +855,53 @@ strong {
 }
 
 /* ============================================
+   HISTORICAL EVENT EFFECTS
+   ============================================ */
+.event-effects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.event-card {
+    background: white;
+    border-radius: 10px;
+    padding: var(--spacing-md);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.event-card h5 {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.event-sub {
+    color: var(--color-text-light);
+    font-size: 0.85rem;
+    margin-bottom: 0.55rem;
+}
+
+.event-metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0.35rem 0;
+    font-size: 0.9rem;
+}
+
+.event-metric-name {
+    color: var(--color-text-light);
+}
+
+.event-metric-value {
+    font-weight: 600;
+}
+
+/* ============================================
    CONCLUSION
    ============================================ */
 .conclusion-section {

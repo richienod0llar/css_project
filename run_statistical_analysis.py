@@ -6,6 +6,8 @@ Generates:
   - hypothesis_results.csv
   - top_correlations.csv
   - model_coefficients.csv
+  - event_effects_model.csv
+  - event_period_summary.csv
   - category_group_means.csv
   - season_group_means.csv
   - tag_effects_top.csv
@@ -117,6 +119,23 @@ def save_figure_both(fig: plt.Figure, name: str) -> None:
     fig.savefig(BASE_OUTPUT / name, dpi=220, bbox_inches="tight")
     fig.savefig(WEB_OUTPUT / name, dpi=220, bbox_inches="tight")
     plt.close(fig)
+
+
+def build_event_windows(year_series: pd.Series) -> tuple[pd.DataFrame, list[dict[str, int | str]]]:
+    """
+    Create event-window indicators used for event-study style modeling.
+    """
+    events: list[dict[str, int | str]] = [
+        {"name": "cold_war_reset", "label": "Cold War Reset", "start": 1990, "end": 1993},
+        {"name": "post_9_11", "label": "Post-9/11 Era", "start": 2001, "end": 2004},
+        {"name": "financial_crisis", "label": "Global Financial Crisis", "start": 2008, "end": 2010},
+        {"name": "pandemic_shock", "label": "COVID Shock", "start": 2020, "end": 2021},
+    ]
+
+    out = pd.DataFrame(index=year_series.index)
+    for e in events:
+        out[e["name"]] = ((year_series >= e["start"]) & (year_series <= e["end"])).astype(float)
+    return out, events
 
 
 def main() -> None:
@@ -231,6 +250,70 @@ def main() -> None:
         .reset_index()
     )
     save_both(season_means, "season_group_means.csv")
+
+    # -----------------------------
+    # Historical event effects (yearly event-study style)
+    # -----------------------------
+    yearly = (
+        df.groupby("year")
+        .agg(
+            n_images=("aesthetic", "size"),
+            mean_lightness=("mean_lightness", "mean"),
+            mean_saturation=("mean_saturation", "mean"),
+            palette_distance=("palette_distance", "mean"),
+            aesthetic=("aesthetic", "mean"),
+        )
+        .reset_index()
+        .sort_values("year")
+    )
+    yearly["year_centered"] = yearly["year"] - yearly["year"].mean()
+
+    event_dummies, event_meta = build_event_windows(yearly["year"])
+    yearly = pd.concat([yearly, event_dummies], axis=1)
+
+    event_terms = [e["name"] for e in event_meta]
+    event_effect_rows: list[pd.DataFrame] = []
+
+    for outcome in ["mean_lightness", "mean_saturation", "palette_distance"]:
+        x_cols = ["intercept", "year_centered", *event_terms]
+        x_event = pd.DataFrame({"intercept": 1.0, "year_centered": yearly["year_centered"]})
+        x_event = pd.concat([x_event, yearly[event_terms]], axis=1)
+        y_event = yearly[outcome].to_numpy()
+
+        coef_event = fit_ols_with_inference(y=y_event, x=x_event.to_numpy(), col_names=x_cols)
+        coef_event["outcome"] = outcome
+        event_effect_rows.append(coef_event)
+
+    event_effects = pd.concat(event_effect_rows, ignore_index=True)
+    event_effects["q_value"] = benjamini_hochberg(event_effects["p_value"])
+    event_effects = event_effects.sort_values(["outcome", "p_value"])
+    save_both(event_effects, "event_effects_model.csv")
+
+    baseline_mask = np.ones(len(yearly), dtype=bool)
+    for term in event_terms:
+        baseline_mask &= yearly[term].to_numpy() == 0
+
+    period_rows = []
+    baseline = yearly.loc[baseline_mask]
+    for outcome in ["mean_lightness", "mean_saturation", "palette_distance"]:
+        baseline_mean = float(baseline[outcome].mean())
+        for e in event_meta:
+            mask = (yearly["year"] >= e["start"]) & (yearly["year"] <= e["end"])
+            m = float(yearly.loc[mask, outcome].mean())
+            period_rows.append(
+                {
+                    "event_name": e["name"],
+                    "event_label": e["label"],
+                    "start_year": e["start"],
+                    "end_year": e["end"],
+                    "outcome": outcome,
+                    "event_window_mean": m,
+                    "baseline_mean": baseline_mean,
+                    "delta_vs_baseline": m - baseline_mean,
+                }
+            )
+    event_summary = pd.DataFrame(period_rows)
+    save_both(event_summary, "event_period_summary.csv")
 
     # -----------------------------
     # Multivariable OLS (standardized)
@@ -530,6 +613,30 @@ def main() -> None:
     ax4.set_xlabel("Effect on aesthetic")
     ax4.set_ylabel("")
     save_figure_both(fig4, "stats_tag_effects.png")
+
+    # 5) Historical event timeline (yearly means with event windows)
+    fig5, axes5 = plt.subplots(3, 1, figsize=(11, 10), sharex=True)
+    outcomes = [
+        ("mean_lightness", "Mean Lightness"),
+        ("mean_saturation", "Mean Saturation"),
+        ("palette_distance", "Palette Distance"),
+    ]
+    colors = {"mean_lightness": "#3b3b3b", "mean_saturation": "#2a9d8f", "palette_distance": "#7f5539"}
+
+    for ax, (outcome, label) in zip(axes5, outcomes):
+        ax.plot(yearly["year"], yearly[outcome], color=colors[outcome], linewidth=2)
+        ax.set_ylabel(label)
+        ax.grid(alpha=0.25)
+        for e in event_meta:
+            ax.axvspan(e["start"], e["end"], color="#b56576", alpha=0.12)
+        ax.set_title(label)
+
+    axes5[-1].set_xlabel("Year")
+    legend_labels = ", ".join([f"{e['label']} ({e['start']}-{e['end']})" for e in event_meta])
+    fig5.suptitle("Runway color metrics with historical event windows", y=0.995)
+    fig5.text(0.5, 0.01, legend_labels, ha="center", va="bottom", fontsize=9)
+    fig5.tight_layout()
+    save_figure_both(fig5, "stats_historical_event_timeline.png")
 
     print("Saved statistical outputs to:")
     print(f"  - {BASE_OUTPUT}")

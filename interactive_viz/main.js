@@ -90,6 +90,8 @@ let correlationData = [];
 let coefficientData = [];
 let categoryData = [];
 let seasonData = [];
+let eventEffectsData = [];
+let eventSummaryData = [];
 
 // ============================================
 // DATA LOADING
@@ -162,6 +164,16 @@ async function loadData() {
         if (!seasonResponse.ok) throw new Error(`HTTP error! status: ${seasonResponse.status}`);
         seasonData = parseCSV(await seasonResponse.text());
         console.log('Parsed category rows:', categoryData.length, 'season rows:', seasonData.length);
+
+        // Load historical event effect outputs
+        console.log('Loading event-effect data...');
+        const eventEffectsResponse = await fetch('chromatic_analysis_output/event_effects_model.csv');
+        if (!eventEffectsResponse.ok) throw new Error(`HTTP error! status: ${eventEffectsResponse.status}`);
+        eventEffectsData = parseCSV(await eventEffectsResponse.text());
+        const eventSummaryResponse = await fetch('chromatic_analysis_output/event_period_summary.csv');
+        if (!eventSummaryResponse.ok) throw new Error(`HTTP error! status: ${eventSummaryResponse.status}`);
+        eventSummaryData = parseCSV(await eventSummaryResponse.text());
+        console.log('Parsed event effects rows:', eventEffectsData.length, 'event summary rows:', eventSummaryData.length);
         
         console.log('✅ Data loaded successfully!');
         console.log('📊 Yearly data points:', yearlyData.length);
@@ -233,6 +245,7 @@ function initializeVisualizations() {
     createPaletteExplorer();
     createDesignerChart();
     createHypothesisDashboard();
+    createEventEffectsSection();
     createCycleVisualization();
     createFinalVisualization();
     animateStatsOnScroll();
@@ -877,6 +890,165 @@ function createSeasonChart() {
 }
 
 // ============================================
+// HISTORICAL EVENT EFFECTS
+// ============================================
+
+function createEventEffectsSection() {
+    createEventTimelineChart();
+    createEventCards();
+}
+
+function createEventTimelineChart() {
+    const container = document.getElementById('event-timeline-chart');
+    if (!container || yearlyData.length === 0 || eventSummaryData.length === 0) return;
+    container.innerHTML = '';
+
+    const width = container.clientWidth || 900;
+    const height = 360;
+    const margin = { top: 18, right: 20, bottom: 50, left: 55 };
+    const chartWidth = width - margin.left - margin.right;
+    const chartHeight = height - margin.top - margin.bottom;
+
+    const outcomes = [
+        { key: 'mean_lightness', label: 'Lightness', color: '#2e2e2e' },
+        { key: 'mean_saturation', label: 'Saturation', color: '#2a9d8f' },
+        { key: 'palette_distance', label: 'Distance', color: '#7f5539' }
+    ];
+
+    const eventWindows = Array.from(
+        new Map(
+            eventSummaryData.map(d => [
+                `${d.event_name}-${d.start_year}-${d.end_year}`,
+                {
+                    name: d.event_name,
+                    label: d.event_label,
+                    start: Number(d.start_year),
+                    end: Number(d.end_year)
+                }
+            ])
+        ).values()
+    );
+
+    const svg = d3.select(container).append('svg').attr('width', width).attr('height', height);
+    const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const x = d3.scaleLinear()
+        .domain(d3.extent(yearlyData, d => d.year))
+        .range([0, chartWidth]);
+
+    // Use normalized series so all 3 metrics share one axis.
+    const normalized = outcomes.flatMap(o => {
+        const vals = yearlyData.map(d => Number(d[o.key]));
+        const min = d3.min(vals);
+        const max = d3.max(vals);
+        return yearlyData.map(d => ({
+            year: d.year,
+            outcome: o.key,
+            z: max === min ? 0 : ((Number(d[o.key]) - min) / (max - min)) * 2 - 1
+        }));
+    });
+
+    const y = d3.scaleLinear().domain([-1.1, 1.1]).range([chartHeight, 0]);
+
+    // Event windows
+    eventWindows.forEach(ev => {
+        g.append('rect')
+            .attr('x', x(ev.start))
+            .attr('y', 0)
+            .attr('width', Math.max(2, x(ev.end + 1) - x(ev.start)))
+            .attr('height', chartHeight)
+            .attr('fill', '#b56576')
+            .attr('opacity', 0.12);
+    });
+
+    const line = d3.line()
+        .x(d => x(d.year))
+        .y(d => y(d.z))
+        .curve(d3.curveMonotoneX);
+
+    outcomes.forEach(o => {
+        const series = normalized.filter(d => d.outcome === o.key);
+        g.append('path')
+            .datum(series)
+            .attr('fill', 'none')
+            .attr('stroke', o.color)
+            .attr('stroke-width', 2)
+            .attr('d', line);
+    });
+
+    g.append('g').attr('transform', `translate(0,${chartHeight})`)
+        .call(d3.axisBottom(x).ticks(8).tickFormat(d3.format('d')));
+    g.append('g').call(d3.axisLeft(y).ticks(5));
+
+    // Legend
+    const legend = svg.append('g').attr('transform', `translate(${margin.left},${height - 14})`);
+    outcomes.forEach((o, i) => {
+        const lg = legend.append('g').attr('transform', `translate(${i * 160},0)`);
+        lg.append('line').attr('x1', 0).attr('x2', 20).attr('y1', 0).attr('y2', 0).attr('stroke', o.color).attr('stroke-width', 2.5);
+        lg.append('text').attr('x', 26).attr('y', 4).style('font-size', '11px').text(o.label);
+    });
+}
+
+function createEventCards() {
+    const grid = document.getElementById('event-effects-grid');
+    if (!grid || eventSummaryData.length === 0 || eventEffectsData.length === 0) return;
+    grid.innerHTML = '';
+
+    const events = Array.from(
+        new Map(
+            eventSummaryData.map(d => [
+                `${d.event_name}-${d.start_year}-${d.end_year}`,
+                {
+                    name: d.event_name,
+                    label: d.event_label,
+                    start: Number(d.start_year),
+                    end: Number(d.end_year)
+                }
+            ])
+        ).values()
+    );
+
+    const outcomeLabel = {
+        mean_lightness: 'Lightness',
+        mean_saturation: 'Saturation',
+        palette_distance: 'Distance'
+    };
+
+    events.forEach(ev => {
+        const card = document.createElement('div');
+        card.className = 'event-card';
+
+        const rows = ['mean_lightness', 'mean_saturation', 'palette_distance'].map(outcome => {
+            const summary = eventSummaryData.find(
+                d => d.event_name === ev.name && d.outcome === outcome
+            );
+            const coef = eventEffectsData.find(
+                d => d.term === ev.name && d.outcome === outcome
+            );
+            const delta = summary ? Number(summary.delta_vs_baseline) : 0;
+            const q = coef ? Number(coef.q_value) : Number.POSITIVE_INFINITY;
+            const sig = Number.isFinite(q) && q < 0.05;
+            return `
+                <div class="event-metric-row">
+                    <span class="event-metric-name">${outcomeLabel[outcome]}</span>
+                    <span class="event-metric-value">
+                        Δ ${delta >= 0 ? '+' : ''}${delta.toFixed(2)} ${sig ? '• sig' : ''}
+                    </span>
+                </div>
+            `;
+        }).join('');
+
+        card.innerHTML = `
+            <h5>${ev.label}</h5>
+            <div class="event-sub">${ev.start}-${ev.end}</div>
+            ${rows}
+        `;
+
+        grid.appendChild(card);
+    });
+}
+
+// ============================================
 // FASHION CYCLE VISUALIZATION
 // ============================================
 
@@ -1256,6 +1428,7 @@ window.addEventListener('resize', () => {
         createCoefficientChart();
         createCategoryChart();
         createSeasonChart();
+        createEventEffectsSection();
         createCycleVisualization();
         createFinalVisualization();
     }, 150);
