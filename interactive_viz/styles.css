@@ -12,7 +12,7 @@
 
 :root {
     /* Colors */
-    --color-bg: #e6ddcf;
+    --color-bg: #f8f6f2;
     --color-text: #1a1a1a;
     --color-text-light: #666666;
     --color-accent: #2e2e2e;
@@ -39,15 +39,15 @@
 html {
     scroll-behavior: smooth;
     font-size: 16px;
-    background-color: #e6ddcf;
+    background-color: var(--color-bg);
 }
 
 body {
     font-family: var(--font-sans);
     color: var(--color-text);
-    background-color: #e6ddcf;
+    background-color: var(--color-bg);
     background-image: radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.08) 1px, transparent 0),
-        linear-gradient(180deg, #ebe3d6 0%, #e3d9cb 55%, #d9cfc0 100%);
+        linear-gradient(180deg, #fcfbf8 0%, #f7f4ef 55%, #f2eee8 100%);
     background-size: 7px 7px, 100% 100%;
     background-attachment: fixed;
     line-height: 1.7;
@@ -738,14 +738,14 @@ strong {
 
 .designer-bar {
     height: 24px;
-    background: linear-gradient(90deg, #e0e0e0, #c0c0c0);
+    background: linear-gradient(90deg, #5f7df0, #7a57bf);
     border-radius: 4px;
     transition: all 0.3s ease;
     position: relative;
 }
 
 .designer-bar:hover {
-    background: linear-gradient(90deg, #ff6b6b, #ee5a6f);
+    background: linear-gradient(90deg, #6d88f4, #8965cb);
 }
 
 .designer-value {
@@ -1151,12 +1151,14 @@ strong {
 
 .mirror-value {
     position: absolute;
+    top: 50%;
     left: var(--spacing-sm);
+    transform: translateY(-50%);
     font-weight: 600;
     color: white;
     font-size: 0.9rem;
-    mix-blend-mode: difference;
-    filter: invert(0);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 1;
 }
 
 /* ============================================
